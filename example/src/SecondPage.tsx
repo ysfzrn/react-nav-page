@@ -1,16 +1,16 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import { push } from 'react-nav-page';
+import { pop } from 'react-nav-page';
 
-export default function App() {
+export default function SecondPage() {
   return (
     <View style={styles.container}>
       <Button
-        title="Go To Second Page"
+        title="POP"
         color="white"
         onPress={() => {
-          push('SecondPage');
+          pop();
         }}
       />
     </View>
@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#673ab7',
+    backgroundColor: '#ff9800',
+  },
+  box: {
+    width: 60,
+    height: 60,
+    marginVertical: 20,
   },
 });

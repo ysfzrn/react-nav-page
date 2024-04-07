@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/ysfzrn/react-nav-page.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm}"
+  s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
   # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.
@@ -27,6 +27,8 @@ Pod::Spec.new do |s|
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
     s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
     s.pod_target_xcconfig    = {
+        "DEFINES_MODULE" => "YES",
+        "SWIFT_OBJC_INTERFACE_HEADER_NAME" => "react-nav-page-Swift.h",
         "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
         "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
         "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
