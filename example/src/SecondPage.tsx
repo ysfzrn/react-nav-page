@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Button } from 'react-native';
-import { pop } from 'react-nav-page';
+import { StyleSheet, View } from 'react-native';
+import ReactNavPage from 'react-nav-page';
+import { Button } from './components/Button';
 
 export default function SecondPage() {
   return (
     <View style={styles.container}>
       <Button
-        title="POP"
-        color="white"
+        label="POP"
         onPress={() => {
-          pop();
+          ReactNavPage.pop();
         }}
       />
     </View>

@@ -22,10 +22,6 @@
 
 RCT_EXPORT_MODULE(ReactNavPage)
 
-- (NSNumber *)multiply:(double)a b:(double)b {
-    return [moduleImpl multiplyWithA:a b:b];
-}
-
 - (void)pop { 
     [moduleImpl pop];
 }
@@ -34,6 +30,11 @@ RCT_EXPORT_MODULE(ReactNavPage)
 - (void)push:(NSString *)routeName { 
     [moduleImpl pushWithRouteName:routeName];
 }
+
+- (void)setRoot:(NSString *)routeName {
+    [moduleImpl setRootWithRouteName:routeName];
+}
+
 
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params{

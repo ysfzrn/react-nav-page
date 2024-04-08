@@ -1,27 +1,9 @@
 # react-nav-page
 
-another native navigation library for react-native
+This project is still in progress. I'm trying to write a native navigation library and sharing my experiences. You can follow it on Medium.
 
-## Installation
+- Writing a Native Navigation Library for React Native - PART 1
 
-```sh
-npm install react-nav-page
-```
-
-## Usage
-
-
-```js
-import { multiply } from 'react-nav-page';
-
-// ...
-
-const result = multiply(3, 7);
-```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
 
 ## License
 

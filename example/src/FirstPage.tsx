@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Button } from 'react-native';
-import { push } from 'react-nav-page';
+import { StyleSheet, View } from 'react-native';
+import ReactNavPage from 'react-nav-page';
+import { Button } from './components/Button';
 
-export default function App() {
+export default function FirstPage() {
   return (
     <View style={styles.container}>
       <Button
-        title="Go To Second Page"
-        color="white"
+        label="Go To Second Page"
         onPress={() => {
-          push('SecondPage');
+          ReactNavPage.push('SecondPage');
         }}
       />
     </View>
