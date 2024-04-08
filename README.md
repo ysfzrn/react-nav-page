@@ -1,8 +1,8 @@
 # react-nav-page
 
-This project is still in progress. I'm trying to write a native navigation library and sharing my experiences. You can follow it on Medium.
+This project is still in progress. I'm trying to write a native navigation library and share my experiences. You can follow it on Medium.
 
-- Writing a Native Navigation Library for React Native - PART 1
+- [Writing a Native Navigation Library for React Native - PART 1](https://medium.com/@ysfzrn/writing-a-native-navigation-library-for-react-native-part-1-24b4ab118810)
 
 
 ## License
