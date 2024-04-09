@@ -4,8 +4,9 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.reactnavpage.ReactNavPageActivity
 
-class MainActivity : ReactActivity() {
+class MainActivity : ReactNavPageActivity() {
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule

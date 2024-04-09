@@ -104,8 +104,10 @@ dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
+  def nav_version = "2.7.7"
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
 }
 
 if (isNewArchitectureEnabled()) {
