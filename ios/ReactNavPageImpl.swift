@@ -17,17 +17,20 @@ public class ReactNavPageImpl : NSObject {
         ReactNavPageImpl.sharedInstance.bridge = bridge
     }
     
-    @objc public func push(routeName: NSString) -> Void {
-        DispatchQueue.main.async {
-            let rootViewController = self.getTopViewController();
-            let rootVC = UIViewController()
-            //rootVC.title = "Welcome"
-            
-            let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: nil)
-            rootVC.view = reactRootView
-            
-            rootViewController.navigationController?.pushViewController(rootVC, animated: true)
-        }
+    @objc public func push(routeName: NSString, params: NSDictionary) -> Void {
+           DispatchQueue.main.async {
+               let rootViewController = self.getTopViewController();
+               let rootVC = UIViewController()
+               
+               let initialProps: [String: Any] = [
+                   "params": params
+               ]
+               
+               let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: initialProps)
+               rootVC.view = reactRootView
+               
+               rootViewController.navigationController?.pushViewController(rootVC, animated: true)
+           }
     }
     
     @objc public func pop() -> Void {

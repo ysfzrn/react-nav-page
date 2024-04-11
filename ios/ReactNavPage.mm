@@ -27,13 +27,14 @@ RCT_EXPORT_MODULE(ReactNavPage)
 }
 
 
-- (void)push:(NSString *)routeName { 
-    [moduleImpl pushWithRouteName:routeName];
-}
-
 - (void)setRoot:(NSString *)routeName {
     [moduleImpl setRootWithRouteName:routeName];
 }
+
+- (void)push:(NSString *)routeName params:(NSDictionary *)params { 
+    [moduleImpl pushWithRouteName:routeName params:params];
+}
+
 
 
 

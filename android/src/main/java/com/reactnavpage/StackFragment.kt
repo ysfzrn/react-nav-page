@@ -17,6 +17,10 @@ class StackFragment: Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
+    if(reactRootView != null){
+      return reactRootView
+    }
+
     val currentRoute = findNavController().currentBackStackEntry?.destination?.route
     val params = arguments?.getBundle("params")
     val mergedParams = composeLaunchOptions(params!!)
@@ -27,6 +31,11 @@ class StackFragment: Fragment() {
     reactRootView?.startReactApplication(reactInstanceManager, currentRoute, mergedParams)
     reactRootView!!.fitsSystemWindows = true
     return  reactRootView
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    reactRootView?.unmountReactApplication()
   }
 
   private fun composeLaunchOptions(params: Bundle): Bundle? {

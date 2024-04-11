@@ -6,7 +6,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigator
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
 
@@ -29,16 +31,18 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
     })
   }
 
-  override fun push(routeName: String?) {
+   override fun push(routeName: String?, params: ReadableMap?) {
     UiThreadUtil.runOnUiThread(Runnable {
       val currentActivity = currentActivity as ReactNavPageActivity
       val navController = currentActivity.navController
       val navigator = navController?.navigatorProvider?.getNavigator(FragmentNavigator::class.java);
 
-      val params = Bundle()
+      val bundle = Bundle()
+      val screenProps = Arguments.toBundle(params);
+      bundle.putBundle("params", screenProps);
 
       val argumentBuilder = NavArgumentBuilder();
-      argumentBuilder.defaultValue = params
+      argumentBuilder.defaultValue = bundle
       val argument = argumentBuilder.build()
 
       val destination = navigator?.createDestination()
@@ -48,7 +52,7 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
       destination?.setClassName(StackFragment::class.java.name)
 
       if (destination != null) {
-        navController.graph.addDestination(destination)
+        navController.graph.addDestination(destination)      
         val builder = NavOptions.Builder()
         navController.graph.findStartDestination().id
 

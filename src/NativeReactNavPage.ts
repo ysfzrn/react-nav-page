@@ -1,9 +1,10 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   setRoot(routeName: string): void;
-  push(routeName: string): void;
+  push(routeName: string, params?: UnsafeObject): void;
   pop(): void;
 }
 
