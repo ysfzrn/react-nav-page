@@ -20,6 +20,8 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
     return NAME
   }
 
+
+
   override fun setRoot(routeName: String?) {
     UiThreadUtil.runOnUiThread(Runnable {
       if(currentActivity != null){
@@ -52,7 +54,7 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
       destination?.setClassName(StackFragment::class.java.name)
 
       if (destination != null) {
-        navController.graph.addDestination(destination)      
+        navController.graph.addDestination(destination)
         val builder = NavOptions.Builder()
         navController.graph.findStartDestination().id
 
@@ -72,6 +74,10 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
       navController?.popBackStack()
     })
   }
+
+  override fun addListener(eventName: String?) = Unit;
+
+  override fun removeListeners(count: Double) = Unit;
 
   companion object {
     const val NAME = "ReactNavPage"

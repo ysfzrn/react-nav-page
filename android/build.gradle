@@ -108,6 +108,7 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+  implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 }
 
 if (isNewArchitectureEnabled()) {

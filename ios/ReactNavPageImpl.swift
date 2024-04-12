@@ -6,10 +6,16 @@
 //
 import Foundation
 import React
+
+@objc(ReactNavPageImplDelegate)
+public protocol ReactNavPageImplDelegate {
+    func sendNavigationEvent(name: String, payload: Dictionary<String, Any>)
+}
  
 @objc(ReactNavPageImpl)
 public class ReactNavPageImpl : NSObject {
-    @objc static var sharedInstance = ReactNavPageImpl()
+    @objc public static var sharedInstance = ReactNavPageImpl()
+    @objc public weak var delegate: ReactNavPageImplDelegate? = nil
     var bridge: RCTBridge?
     
     @objc(setBridge:)
@@ -17,10 +23,16 @@ public class ReactNavPageImpl : NSObject {
         ReactNavPageImpl.sharedInstance.bridge = bridge
     }
     
+    public func sendEvent(name: String, payload: Dictionary<String, Any>) {
+        self.delegate?.sendNavigationEvent(name: name, payload: payload)
+    }
+    
+    
     @objc public func push(routeName: NSString, params: NSDictionary) -> Void {
            DispatchQueue.main.async {
                let rootViewController = self.getTopViewController();
-               let rootVC = UIViewController()
+               let rootVC = ReactNavPageController()
+               rootVC.routeName = routeName as String
                
                let initialProps: [String: Any] = [
                    "params": params
@@ -28,6 +40,7 @@ public class ReactNavPageImpl : NSObject {
                
                let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: initialProps)
                rootVC.view = reactRootView
+               rootVC.rootTag = reactRootView?.reactTag ?? 0
                
                rootViewController.navigationController?.pushViewController(rootVC, animated: true)
            }
@@ -44,9 +57,11 @@ public class ReactNavPageImpl : NSObject {
     
     @objc public func setRoot(routeName: NSString) -> Void {
         DispatchQueue.main.async {
-            let rootVC = UIViewController()
+            let rootVC = ReactNavPageController()
+            rootVC.routeName = routeName as String
             let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: nil)
             rootVC.view = reactRootView
+            rootVC.rootTag = reactRootView?.reactTag ?? 0
             
             // Transition Animation
             let transition = CATransition()
@@ -60,11 +75,11 @@ public class ReactNavPageImpl : NSObject {
             UIApplication.shared.keyWindow?.rootViewController = navCtrller
             
             navCtrller?.navigationController?.pushViewController(rootVC, animated: false)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.sendEvent(name: "onRouteChange", payload: ["routeName": routeName, "rootTag": rootVC.rootTag ])
+            }
         }
     }
-    
-    
-    
     
     //https://stackoverflow.com/a/31215012
     func getTopViewController()->UIViewController{
@@ -84,4 +99,21 @@ public class ReactNavPageImpl : NSObject {
         }
         return rootViewController
     }
+}
+
+extension UINavigationController: UINavigationControllerDelegate {
+    
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
+    }
+    
+    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if let reactNavPageController = viewController as? ReactNavPageController {
+                let routeName = reactNavPageController.routeName
+                let rootTag = reactNavPageController.rootTag
+                ReactNavPageImpl.sharedInstance.sendEvent(name: "onRouteChange", payload: ["routeName": routeName, "rootTag":rootTag ])
+        }
+    }
+    
 }

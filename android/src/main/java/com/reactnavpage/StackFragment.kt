@@ -1,7 +1,6 @@
 package com.reactnavpage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,11 @@ import com.facebook.react.ReactRootView
 
 class StackFragment: Fragment() {
   private var reactRootView: ReactRootView? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    postponeEnterTransition()
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -31,6 +35,12 @@ class StackFragment: Fragment() {
     reactRootView?.startReactApplication(reactInstanceManager, currentRoute, mergedParams)
     reactRootView!!.fitsSystemWindows = true
     return  reactRootView
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    activity?.startPostponedEnterTransition()
+    startPostponedEnterTransition()
   }
 
   override fun onDestroy() {

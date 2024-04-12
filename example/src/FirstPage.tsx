@@ -1,11 +1,14 @@
-import * as React from 'react';
-
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import ReactNavPage from 'react-nav-page';
+import ReactNavPage, { useRouteChange } from 'react-nav-page';
 import { Button } from './components/Button';
 
 export default function FirstPage() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
+
+  useRouteChange((event: any) => {
+    console.log('Current Route Name', event.routeName);
+  });
 
   return (
     <View style={styles.container}>
