@@ -12,10 +12,31 @@ export default function SecondPage(props: any) {
   return (
     <View style={styles.container}>
       <Button
+        label="Go To Second Page"
+        onPress={() => {
+          ReactNavPage.push({
+            routeName: 'FirstPage',
+            params: {
+              count,
+            },
+          });
+        }}
+      />
+      <Button
         label="POP"
         onPress={() => {
           ReactNavPage.setResult(100);
           ReactNavPage.pop();
+        }}
+      />
+      <Button
+        label="LOG OUT"
+        onPress={() => {
+          ReactNavPage.setRoot({
+            type: 'STACK',
+            routeName: 'FirstPage',
+            params: {},
+          });
         }}
       />
       <Text style={styles.count}>{count}</Text>

@@ -5,8 +5,20 @@ import ReactNavPage from 'react-nav-page';
 export default function SplashPage() {
   useLayoutEffect(() => {
     setTimeout(() => {
-      ReactNavPage.setRoot('FirstPage');
+      ReactNavPage.setRoot({
+        type: 'STACK',
+        routeName: 'FirstPage',
+        params: {},
+      });
     }, 500);
+
+    /*
+    ReactNavPage.setRoot({
+      type: 'TAB_STACK',
+      routeNames: ['FirstPage', 'SecondPage'],
+      tabBarView: 'MyTabBar',
+      initialProps: {},
+    });*/
   }, []);
 
   return (

@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { NativeEventEmitter, Platform } from 'react-native';
-import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
+import type {
+  Float,
+  Int32,
+  UnsafeObject,
+} from 'react-native/Libraries/Types/CodegenTypes';
 
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
@@ -12,6 +16,19 @@ type pushTypes = {
   routeName: string;
   params: UnsafeObject;
   callback?: Function;
+};
+
+type tabTypes = {
+  tabBarComponentName?: string;
+  tabBarHeight?: Float;
+};
+
+type rootTypes = {
+  type: string;
+  routeName?: string;
+  tabBar?: tabTypes;
+  params?: UnsafeObject;
+  stacks?: UnsafeObject;
 };
 
 class ReactNavPage {
@@ -35,8 +52,19 @@ class ReactNavPage {
     ReactNavPageModule.pop();
   };
 
-  setRoot = (routeName: String) => {
-    ReactNavPageModule.setRoot(routeName);
+  setRoot = ({
+    type,
+    routeName = '',
+    tabBar = {},
+    params = {},
+    stacks = [],
+  }: rootTypes) => {
+    console.log('stacks', stacks);
+    ReactNavPageModule.setRoot(type, routeName, params, stacks, tabBar);
+  };
+
+  changeTab = (index: Int32) => {
+    ReactNavPageModule.changeTab(index);
   };
 
   setResult(args: any) {
@@ -55,14 +83,12 @@ class ReactNavPage {
   };
 }
 
-export const useFocused = (routeName: string, callback: Function) => {
+export const useRouteChange = (callback: Function) => {
   useEffect(() => {
     const subscription = moduleEventEmitter.addListener(
       'onRouteChange',
       (event: any) => {
-        if (routeName === event.routeName) {
-          callback({ event });
-        }
+        callback(event);
       }
     );
 
@@ -73,12 +99,13 @@ export const useFocused = (routeName: string, callback: Function) => {
   }, []);
 };
 
-export const useRouteChange = (callback: Function) => {
+export const useTabChange = (callback: Function) => {
   useEffect(() => {
     const subscription = moduleEventEmitter.addListener(
-      'onRouteChange',
+      'onTabChange',
       (event: any) => {
-        callback(event);
+        console.log(event);
+        callback(event.tabIndex);
       }
     );
 

@@ -10,6 +10,7 @@ import React
 @objc(ReactNavPageImplDelegate)
 public protocol ReactNavPageImplDelegate {
     func sendNavigationEvent(name: String, payload: Dictionary<String, Any>)
+    func sendTabChangeEvent(name: String, payload: Dictionary<String, Any>)
 }
  
 @objc(ReactNavPageImpl)
@@ -27,41 +28,46 @@ public class ReactNavPageImpl : NSObject {
         self.delegate?.sendNavigationEvent(name: name, payload: payload)
     }
     
+    public func sendTabChangeEvent(name: String, payload: Dictionary<String, Any>) {
+        self.delegate?.sendTabChangeEvent(name: name, payload: payload)
+    }
+    
     
     @objc public func push(routeName: NSString, params: NSDictionary) -> Void {
            DispatchQueue.main.async {
-               let rootViewController = self.getTopViewController();
-               let rootVC = ReactNavPageController()
-               rootVC.routeName = routeName as String
-               
-               let initialProps: [String: Any] = [
-                   "params": params
-               ]
-               
-               let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: initialProps)
-               rootVC.view = reactRootView
-               rootVC.rootTag = reactRootView?.reactTag ?? 0
-               
+               let rootViewController = getTopViewController();
+               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params)
                rootViewController.navigationController?.pushViewController(rootVC, animated: true)
            }
     }
     
     @objc public func pop() -> Void {
         DispatchQueue.main.async {
-            let rootViewController = self.getTopViewController();
+            let rootViewController = getTopViewController();
             rootViewController.navigationController?.popViewController(animated: true)
             //rootViewController.navigationController?.popToRootViewController(animated: true)
         }
     }
     
-    
-    @objc public func setRoot(routeName: NSString) -> Void {
+    @objc public func changeTab(index: Float) -> Void {
         DispatchQueue.main.async {
-            let rootVC = ReactNavPageController()
-            rootVC.routeName = routeName as String
-            let reactRootView = RootViewUtil.createRootView(ReactNavPageImpl.sharedInstance.bridge, moduleName: routeName as String, initProps: nil)
-            rootVC.view = reactRootView
-            rootVC.rootTag = reactRootView?.reactTag ?? 0
+             let rootViewController = getTopViewController();
+            
+             if(rootViewController.tabBarController?.selectedIndex == Int(index)){
+                 rootViewController.navigationController?.popToRootViewController(animated: true)
+             }else{
+                 self.sendTabChangeEvent(name: "onTabChange", payload: ["tabIndex": index])
+                 rootViewController.tabBarController?.selectedIndex = Int(index)
+             }
+        }
+    }
+    
+    
+    @objc public func setRoot(routeName: NSString, type: NSString, initialProps: NSDictionary, stacks: NSArray, tabBar: NSDictionary) -> Void {
+        DispatchQueue.main.async {
+            let initialProps: [String: Any] = [
+                "params": initialProps
+            ]
             
             // Transition Animation
             let transition = CATransition()
@@ -69,35 +75,40 @@ public class ReactNavPageImpl : NSObject {
             transition.type = CATransitionType.fade
             transition.subtype = CATransitionSubtype.fromRight
             
-            // Change rootViewController
-            let navCtrller = RootViewUtil.wrapperNavigationController(rootVC, storyboardName: "LaunchScreen")
-            UIApplication.shared.keyWindow?.layer.add(transition, forKey: kCATransition)
-            UIApplication.shared.keyWindow?.rootViewController = navCtrller
-            
-            navCtrller?.navigationController?.pushViewController(rootVC, animated: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.sendEvent(name: "onRouteChange", payload: ["routeName": routeName, "rootTag": rootVC.rootTag ])
+            if(type == "STACK"){
+                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary)
+                // Change rootViewController
+                let navCtrller = RootViewUtil.wrapperNavigationController(rootVC, storyboardName: "LaunchScreen")
+                UIApplication.shared.keyWindow?.layer.add(transition, forKey: kCATransition)
+                UIApplication.shared.keyWindow?.rootViewController = navCtrller
+                
+                navCtrller?.navigationController?.pushViewController(rootVC, animated: false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.sendEvent(name: "onRouteChange", payload: ["routeName": routeName ])
+                }
+            }else if(type == "TAB_STACK"){
+                let tabBarName = tabBar["tabBarComponentName"] as? String
+                let tabBarHeight = tabBar["tabBarHeight"] as? Float
+                let tabBarController = TabBarController(tabBarName: tabBarName!, bridge:ReactNavPageImpl.sharedInstance.bridge! , initialProps:  initialProps as NSDictionary, tabBarHeight: tabBarHeight!)
+                var navControllers: [UINavigationController] = []
+                
+                for stack in stacks {
+                    let tabStack = stack as? NSDictionary
+                    let tabName = tabStack?["routeName"] as? String
+                    
+                    let rootVC = ReactNavPageController(routeName: tabName! as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary)
+                    let nv =  UINavigationController(rootViewController: rootVC)
+                    navControllers.append(nv)
+                    
+                    print(tabName as Any)
+                }
+                tabBarController.setViewControllers(navControllers, animated: true)
+                let navCtrller = RootViewUtil.wrapperNavigationController(tabBarController, storyboardName: "LaunchScreen")
+                UIApplication.shared.keyWindow?.layer.add(transition, forKey: kCATransition)
+                UIApplication.shared.keyWindow?.rootViewController = navCtrller
+                navCtrller?.navigationController?.pushViewController(tabBarController, animated: false)
             }
         }
-    }
-    
-    //https://stackoverflow.com/a/31215012
-    func getTopViewController()->UIViewController{
-        return topViewControllerWithRootViewController(rootViewController: UIApplication.shared.keyWindow!.rootViewController!)
-    }
-    func topViewControllerWithRootViewController(rootViewController:UIViewController)->UIViewController{
-        if rootViewController is UITabBarController{
-            let tabBarController = rootViewController as! UITabBarController
-            return topViewControllerWithRootViewController(rootViewController: tabBarController.selectedViewController!)
-        }
-        if rootViewController is UINavigationController{
-            let navBarController = rootViewController as! UINavigationController
-            return topViewControllerWithRootViewController(rootViewController: navBarController.visibleViewController!)
-        }
-        if let presentedViewController = rootViewController.presentedViewController {
-            return topViewControllerWithRootViewController(rootViewController: presentedViewController)
-        }
-        return rootViewController
     }
 }
 
@@ -112,7 +123,7 @@ extension UINavigationController: UINavigationControllerDelegate {
         if let reactNavPageController = viewController as? ReactNavPageController {
                 let routeName = reactNavPageController.routeName
                 let rootTag = reactNavPageController.rootTag
-                ReactNavPageImpl.sharedInstance.sendEvent(name: "onRouteChange", payload: ["routeName": routeName, "rootTag":rootTag ])
+                ReactNavPageImpl.sharedInstance.sendEvent(name: "onRouteChange", payload: ["routeName": routeName ])
         }
     }
     
