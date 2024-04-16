@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import ReactNavPage, { useRouteChange } from 'react-nav-page';
+import ReactNavPage from 'react-nav-page';
 import { Button } from './components/Button';
 
-export default function FirstPage() {
+export default function ThirdPage() {
   const [count, setCount] = useState(0);
 
-  useRouteChange((event: any) => {
-    console.log('Current Route Name', event.routeName);
-  });
-
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
-      console.log('unmount FirstPage');
+      console.log('unmount ThirdPage');
     };
   }, []);
 
@@ -20,21 +16,15 @@ export default function FirstPage() {
     <ScrollView style={{ flex: 1, backgroundColor: 'black' }}>
       <View style={styles.container}>
         <Button
-          label="Go To Page"
+          label="Go To Four"
           onPress={() => {
             ReactNavPage.push({
-              routeName: 'SecondPage',
+              routeName: 'FourPage',
               params: {
                 count,
               },
               callback: (v: number) => setCount(v),
             });
-          }}
-        />
-        <Button
-          label="Count+"
-          onPress={() => {
-            setCount(count + 1);
           }}
         />
         <Button
@@ -45,27 +35,11 @@ export default function FirstPage() {
           }}
         />
         <Button
-          label="Show Tab Bar"
+          label="Count+"
           onPress={() => {
-            ReactNavPage.setRoot({
-              type: 'TAB_STACK',
-              stacks: [
-                {
-                  routeName: 'FirstPage',
-                },
-                {
-                  routeName: 'ThirdPage',
-                },
-              ],
-              tabBar: {
-                tabBarComponentName: 'MyTabBar',
-                tabBarHeight: 100,
-              },
-              params: {},
-            });
+            setCount(count + 1);
           }}
         />
-
         <Text style={styles.count}>{count}</Text>
       </View>
     </ScrollView>
@@ -77,7 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#673ab7',
+    backgroundColor: '#43a047',
     height: 900,
   },
   count: {

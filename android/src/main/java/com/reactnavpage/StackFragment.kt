@@ -11,41 +11,36 @@ import com.facebook.react.ReactRootView
 class StackFragment: Fragment() {
   private var reactRootView: ReactRootView? = null
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    postponeEnterTransition()
-  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    if(reactRootView != null){
-      return reactRootView
-    }
-
     val currentRoute = findNavController().currentBackStackEntry?.destination?.route
     val params = arguments?.getBundle("params")
     val mergedParams = composeLaunchOptions(params!!)
-
     val reactInstanceManager = ReactNavPageModule.navigationValues.getReactInstance()
+    val cachedRooView = ReactNavPageModule.navigationValues.getReactRootView(currentRoute!!)
+
+    if(cachedRooView != null){
+      cachedRooView.setIsFabric(true)
+      cachedRooView.fitsSystemWindows = true
+      return cachedRooView
+    }
+
     reactRootView = ReactRootView(requireContext())
     reactRootView!!.setIsFabric(true)
     reactRootView?.startReactApplication(reactInstanceManager, currentRoute, mergedParams)
     reactRootView!!.fitsSystemWindows = true
+    ReactNavPageModule.navigationValues.putReactRootView(currentRoute, reactRootView!!)
     return  reactRootView
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    activity?.startPostponedEnterTransition()
-    startPostponedEnterTransition()
-  }
 
   override fun onDestroy() {
     super.onDestroy()
-    reactRootView?.unmountReactApplication()
+    //reactRootView?.unmountReactApplication()
   }
 
   private fun composeLaunchOptions(params: Bundle): Bundle? {

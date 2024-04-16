@@ -2,10 +2,12 @@ package com.reactnavpage
 
 import android.os.Bundle
 import androidx.navigation.NavArgumentBuilder
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
+import androidx.navigation.createGraph
 import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.fragment
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
@@ -20,58 +22,80 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
     return NAME
   }
 
-
-
-  override fun setRoot(routeName: String?) {
-    UiThreadUtil.runOnUiThread(Runnable {
-      if(currentActivity != null){
+  override fun setRoot(
+    type: String?,
+    routeName: String?,
+    initialProps: ReadableMap?,
+    stacks: ReadableMap?,
+    tabBar: ReadableMap?
+  ) {
+    UiThreadUtil.runOnUiThread {
+      if (currentActivity != null) {
         val currentActivity = currentActivity as ReactNavPageActivity
         if (routeName != null) {
-          currentActivity.setRoot(routeName)
+          currentActivity.setRoot(type, routeName, stacks, tabBar, initialProps)
         }
       }
+    }
+  }
+
+  override fun changeTab(index: Double) {
+    UiThreadUtil.runOnUiThread(Runnable {
+      navigationValues.changeTab(index.toInt())
     })
   }
+
+
 
    override fun push(routeName: String?, params: ReadableMap?) {
     UiThreadUtil.runOnUiThread(Runnable {
       val currentActivity = currentActivity as ReactNavPageActivity
-      val navController = currentActivity.navController
-      val navigator = navController?.navigatorProvider?.getNavigator(FragmentNavigator::class.java);
+      val navController = navigationValues.getCurrentNavController()
+      val navigator = navController.navigatorProvider.getNavigator(FragmentNavigator::class.java);
+        val bundle = Bundle()
+        val screenProps = Arguments.toBundle(params);
+        bundle.putBundle("params", screenProps);
 
-      val bundle = Bundle()
-      val screenProps = Arguments.toBundle(params);
-      bundle.putBundle("params", screenProps);
+        val argumentBuilder = NavArgumentBuilder();
+        argumentBuilder.defaultValue = bundle
+        val argument = argumentBuilder.build()
 
-      val argumentBuilder = NavArgumentBuilder();
-      argumentBuilder.defaultValue = bundle
-      val argument = argumentBuilder.build()
+        val destination = navigator?.createDestination()
+        destination?.route = routeName
+        destination?.label = routeName
+        destination?.addArgument("params", argument)
+        destination?.setClassName(StackFragment::class.java.name)
 
-      val destination = navigator?.createDestination()
-      destination?.route = routeName
-      destination?.label = routeName
-      destination?.addArgument("params", argument)
-      destination?.setClassName(StackFragment::class.java.name)
+        if (destination != null) {
+          navController.graph.addDestination(destination)
+          val builder = NavOptions.Builder()
+          //navController.graph.findStartDestination().id
+          navController.graph.findStartDestination().id.let {
+            builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
+            builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
+            builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
+            builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
+          }
 
-      if (destination != null) {
-        navController.graph.addDestination(destination)
-        val builder = NavOptions.Builder()
-        navController.graph.findStartDestination().id
+          val options = builder.build()
 
-        val options = builder.build()
-        currentActivity.postponeEnterTransition()
-        if (routeName != null) {
-          navController.navigate(routeName, options )
+          if (routeName != null) {
+            navController.navigate(routeName, options )
+          }
         }
-      }
+
     })
   }
 
+
   override fun pop() {
     UiThreadUtil.runOnUiThread(Runnable {
-      val currentActivity = currentActivity as ReactNavPageActivity
-      val navController = currentActivity.navController
-      navController?.popBackStack()
+      val currentRoute = navigationValues.getCurrentRoute()
+      if (currentRoute != null) {
+        navigationValues.removeReactRootView(currentRoute)
+      }
+      val navController = navigationValues.getCurrentNavController()
+      navController.popBackStack()
     })
   }
 

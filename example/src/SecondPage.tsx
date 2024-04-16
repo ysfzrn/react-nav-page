@@ -1,13 +1,31 @@
 import * as React from 'react';
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, BackHandler, StyleSheet, Text, View } from 'react-native';
 import ReactNavPage from 'react-nav-page';
 import { Button } from './components/Button';
 
 export default function SecondPage(props: any) {
-  const {
-    params: { count },
-  } = props || {};
+  const { params: { count = 0 } = {} } = props || {};
+
+  React.useEffect(() => {
+    const onBackPress = () => {
+      Alert.alert('Alert Title', 'Back button disabled on this page', [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+      return true;
+    };
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      console.log('unmount SecondPage');
+    };
+  }, []);
 
   return (
     <View style={styles.container}>

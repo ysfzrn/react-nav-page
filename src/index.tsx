@@ -60,7 +60,10 @@ class ReactNavPage {
     stacks = [],
   }: rootTypes) => {
     console.log('stacks', stacks);
-    ReactNavPageModule.setRoot(type, routeName, params, stacks, tabBar);
+    const stacksObj = {
+      tabs: stacks,
+    };
+    ReactNavPageModule.setRoot(type, routeName, params, stacksObj, tabBar);
   };
 
   changeTab = (index: Int32) => {
