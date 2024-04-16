@@ -63,7 +63,7 @@ public class ReactNavPageImpl : NSObject {
     }
     
     
-    @objc public func setRoot(routeName: NSString, type: NSString, initialProps: NSDictionary, stacks: NSArray, tabBar: NSDictionary) -> Void {
+    @objc public func setRoot(routeName: NSString, type: NSString, initialProps: NSDictionary, stacks: NSDictionary, tabBar: NSDictionary) -> Void {
         DispatchQueue.main.async {
             let initialProps: [String: Any] = [
                 "params": initialProps
@@ -92,7 +92,8 @@ public class ReactNavPageImpl : NSObject {
                 let tabBarController = TabBarController(tabBarName: tabBarName!, bridge:ReactNavPageImpl.sharedInstance.bridge! , initialProps:  initialProps as NSDictionary, tabBarHeight: tabBarHeight!)
                 var navControllers: [UINavigationController] = []
                 
-                for stack in stacks {
+                var tabStacks = stacks["tabs"] as! NSArray
+                for stack in tabStacks {
                     let tabStack = stack as? NSDictionary
                     let tabName = tabStack?["routeName"] as? String
                     
