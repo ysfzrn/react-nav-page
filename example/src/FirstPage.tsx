@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReactNavPage, { useRouteChange } from 'react-nav-page';
 import { Button } from './components/Button';
+const Spiderman = require('./assets/spiderman.png');
 
 export default function FirstPage() {
   const [count, setCount] = useState(0);
@@ -19,6 +20,7 @@ export default function FirstPage() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: 'black' }}>
       <View style={styles.container}>
+        <Image source={Spiderman} style={styles.image} resizeMode="contain" />
         <Button
           label="Go To Page"
           onPress={() => {
@@ -84,5 +86,9 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  image: {
+    width: 200,
+    height: 240,
   },
 });

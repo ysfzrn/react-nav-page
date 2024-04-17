@@ -23,6 +23,15 @@ export default function FourPage(props: any) {
             setCount(stCount + 1);
           }}
         />
+        <Button
+          label="Shared Page"
+          onPress={() => {
+            ReactNavPage.push({
+              routeName: 'SharedPage',
+              params: {},
+            });
+          }}
+        />
         <Text style={styles.count}>{count}</Text>
       </View>
     </ScrollView>

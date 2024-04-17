@@ -6,6 +6,7 @@
 //
 import Foundation
 import React
+import Hero
 
 @objc(ReactNavPageImplDelegate)
 public protocol ReactNavPageImplDelegate {
@@ -37,6 +38,22 @@ public class ReactNavPageImpl : NSObject {
            DispatchQueue.main.async {
                let rootViewController = getTopViewController();
                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params)
+               if(routeName == "SharedDetail"){
+                   if let myView = findView(withNativeID: "spidermanContainer", in: rootVC.view!) {
+                       // Bulundu!
+                       print("viewWillAppear Bulundu!")
+                       myView.hero.id = "spiderman"
+                   } else {
+                       // Bulunamadı
+                       print("viewWillAppear Bulunamadı!")
+                   }
+                   
+                   rootViewController.navigationController?.hero.isEnabled = true
+                   rootViewController.navigationController?.isNavigationBarHidden = true
+               }else{
+                   rootViewController.navigationController?.hero.isEnabled = false
+                   rootViewController.navigationController?.isNavigationBarHidden = false
+               }
                rootViewController.navigationController?.pushViewController(rootVC, animated: true)
            }
     }

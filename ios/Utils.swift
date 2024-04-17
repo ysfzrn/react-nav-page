@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import React
 
 //https://stackoverflow.com/a/31215012
 func getTopViewController()->UIViewController{
@@ -26,3 +26,20 @@ func topViewControllerWithRootViewController(rootViewController:UIViewController
     }
     return rootViewController
 }
+
+
+func findView(withNativeID nativeID: String, in view: UIView) -> UIView? {
+    if view == view as? RCTUIImageViewAnimated {
+        return view
+    }
+    
+    for subview in view.subviews {
+        if let foundView = findView(withNativeID: nativeID, in: subview) {
+            return foundView
+        }
+    }
+    
+    return nil
+}
+
+

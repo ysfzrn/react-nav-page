@@ -7,7 +7,7 @@ export default function SplashPage() {
     setTimeout(() => {
       ReactNavPage.setRoot({
         type: 'STACK',
-        routeName: 'FirstPage',
+        routeName: 'SharedPage',
         params: {},
       });
     }, 500);

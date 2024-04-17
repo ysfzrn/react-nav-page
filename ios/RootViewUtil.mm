@@ -1,4 +1,3 @@
-#import <React/RCTRootView.h>
 #import "RCTAppSetupUtils.h"
 #import "RootViewUtil.h"
 
@@ -41,6 +40,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return initialProps;
 #endif
 }
+
 
 @end
 
