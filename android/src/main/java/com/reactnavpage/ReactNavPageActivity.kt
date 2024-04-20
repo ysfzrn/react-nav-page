@@ -1,37 +1,23 @@
 package com.reactnavpage
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.util.SparseArray
-import android.view.Menu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.navigation.NavArgumentBuilder
-import androidx.navigation.NavController
 import androidx.navigation.NavController.OnDestinationChangedListener
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavOptions
-import androidx.navigation.createGraph
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlin.math.roundToInt
 
 
 open class ReactNavPageActivity: ReactActivity() {
   private val eventManager = EventManager();
   private var currentStackType: String = "STACK"
+  var navigationState: MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
+
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -51,11 +37,13 @@ open class ReactNavPageActivity: ReactActivity() {
       val stackFragment = StackContainer(routeName)
       loadFragment(stackFragment, "STACK")
       currentStackType = "STACK"
+      navigationStateUpdate(this, "root")
     }else if(type == "TAB_STACK"){
       ReactNavPageModule.navigationValues.clearReactRootViews()
       val tabStackFragment = TabStackContainer(stacks, tabBar, initialProps)
       loadFragment(tabStackFragment, "TAB_STACK")
       currentStackType = "TAB_STACK"
+      navigationStateUpdate(this, "root")
     }
     ReactNavPageModule.navigationValues.getCurrentNavController().removeOnDestinationChangedListener(routeChangeListener)
     ReactNavPageModule.navigationValues.getCurrentNavController().addOnDestinationChangedListener(routeChangeListener)
@@ -91,12 +79,26 @@ open class ReactNavPageActivity: ReactActivity() {
   }
 
   private fun onBackHandler(): Boolean {
+    val navController = ReactNavPageModule.navigationValues.getCurrentNavController()
     val currentRoute = ReactNavPageModule.navigationValues.getCurrentRoute()
     if (currentRoute != null) {
-      ReactNavPageModule.navigationValues.removeReactRootView(currentRoute)
+      val currentTab = ReactNavPageModule.navigationValues.getSelectedTab()
+      navigationState[currentTab.toString()]?.let { routeList ->
+        if (routeList.isNotEmpty()) {
+          if(routeList.size > 1){
+            ReactNavPageModule.navigationValues.removeReactRootView(currentRoute)
+            navController.popBackStack()
+          }else{
+            navController.popBackStack()
+          }
+        }
+      }
     }
-    val navController = ReactNavPageModule.navigationValues.getCurrentNavController()
-    navController.popBackStack()
+    navigationStateUpdate(this, "pop")
+    if(navController.currentBackStackEntry?.id == null){
+      this.finish()
+    }
+
     return true
   }
 
@@ -105,6 +107,7 @@ open class ReactNavPageActivity: ReactActivity() {
       val route = destination.route.toString()
       val reactContext = ReactNavPageModule.navigationValues.getReactInstance().currentReactContext
       Log.d("onRouteChange", route)
+
       val params = Arguments.createMap().apply {
         putString("routeName", route)
       }
@@ -112,6 +115,7 @@ open class ReactNavPageActivity: ReactActivity() {
       val handler = Handler(Looper.getMainLooper())
       handler.postDelayed({
         eventManager.sendEvent(reactContext as ReactApplicationContext?, "onRouteChange", params)
+        Log.d("onRouteChange", navigationState.toString())
       }, 100)
     }
 }

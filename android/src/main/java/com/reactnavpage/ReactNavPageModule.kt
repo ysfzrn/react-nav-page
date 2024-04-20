@@ -2,12 +2,9 @@ package com.reactnavpage
 
 import android.os.Bundle
 import androidx.navigation.NavArgumentBuilder
-import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
-import androidx.navigation.createGraph
 import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.fragment
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
@@ -41,7 +38,9 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
 
   override fun changeTab(index: Double) {
     UiThreadUtil.runOnUiThread(Runnable {
+      val currentActivity = currentActivity as ReactNavPageActivity
       navigationValues.changeTab(index.toInt())
+      navigationStateUpdate(currentActivity, "changeTab")
     })
   }
 
@@ -69,18 +68,19 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
         if (destination != null) {
           navController.graph.addDestination(destination)
           val builder = NavOptions.Builder()
-          //navController.graph.findStartDestination().id
-          navController.graph.findStartDestination().id.let {
+          navController.graph.findStartDestination().id
+          /*navController.graph.findStartDestination().id.let {
             builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
             builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
             builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
             builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
-          }
+          }*/
 
           val options = builder.build()
 
           if (routeName != null) {
             navController.navigate(routeName, options )
+            navigationStateUpdate(currentActivity, "push")
           }
         }
 
@@ -90,12 +90,14 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
 
   override fun pop() {
     UiThreadUtil.runOnUiThread(Runnable {
+      val currentActivity = currentActivity as ReactNavPageActivity
       val currentRoute = navigationValues.getCurrentRoute()
       if (currentRoute != null) {
         navigationValues.removeReactRootView(currentRoute)
       }
       val navController = navigationValues.getCurrentNavController()
       navController.popBackStack()
+      navigationStateUpdate(currentActivity, "pop")
     })
   }
 

@@ -1,35 +1,13 @@
 import { useEffect } from 'react';
 import { NativeEventEmitter, Platform } from 'react-native';
-import type {
-  Float,
-  Int32,
-  UnsafeObject,
-} from 'react-native/Libraries/Types/CodegenTypes';
+import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
+import type { pushTypes, rootTypes } from './types';
 
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
 const moduleEventEmitter = new NativeEventEmitter(
   Platform.OS === 'ios' ? ReactNavPageModule : undefined
 );
-
-type pushTypes = {
-  routeName: string;
-  params: UnsafeObject;
-  callback?: Function;
-};
-
-type tabTypes = {
-  tabBarComponentName?: string;
-  tabBarHeight?: Float;
-};
-
-type rootTypes = {
-  type: string;
-  routeName?: string;
-  tabBar?: tabTypes;
-  params?: UnsafeObject;
-  stacks?: UnsafeObject;
-};
 
 class ReactNavPage {
   instance: any;
@@ -59,7 +37,6 @@ class ReactNavPage {
     params = {},
     stacks = [],
   }: rootTypes) => {
-    console.log('stacks', stacks);
     const stacksObj = {
       tabs: stacks,
     };

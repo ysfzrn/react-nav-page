@@ -3,6 +3,7 @@ package com.reactnavpage
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
+import androidx.navigation.ui.setupWithNavController
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
@@ -29,6 +31,7 @@ class TabStackContainer(
   private val eventManager = EventManager();
   private lateinit var tabs: ReadableArray
   private lateinit var customTabBar:ReactRootView
+  private lateinit var bottomNavigationView:BottomNavigationView
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -37,7 +40,7 @@ class TabStackContainer(
   ): View? {
     ReactNavPageModule.navigationValues.addTabListener(this)
     val layout = inflater.inflate(R.layout.tabbar_layout, container, false);
-    val bottomNavigationView = layout.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+    bottomNavigationView = layout.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
     val navHostFragment = childFragmentManager.findFragmentById(R.id.tab_nav_container) as NavHostFragment
     val navController = navHostFragment.navController
 
@@ -62,6 +65,7 @@ class TabStackContainer(
       val bundle = Bundle()
       val screenProps = Arguments.toBundle(initialProps);
       bundle.putBundle("params", screenProps);
+      bottomNavigationView.menu.add(Menu.NONE, i, Menu.NONE, "")
 
       val argumentBuilder = NavArgumentBuilder();
       argumentBuilder.defaultValue = bundle
@@ -116,7 +120,8 @@ class TabStackContainer(
     }
     val reactContext = ReactNavPageModule.navigationValues.getReactInstance().currentReactContext
     eventManager.sendEvent(reactContext as ReactApplicationContext?, "onTabChange", params)
-
+    
+    bottomNavigationView.selectedItemId = index
     val currentNavController = ReactNavPageModule.navigationValues.getCurrentNavController()
     val destinationId = currentNavController.graph.findStartDestination().id
 
@@ -131,10 +136,10 @@ class TabStackContainer(
     )
 
 
-    builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
-    builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
-    builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
-    builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
+    //builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
+    //builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
+    //builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
+    //builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
 
 
     val options = builder.build()

@@ -82,6 +82,10 @@ class NavigationValues {
     return this.selectedTab
   }
 
+  fun setSelectedTab(value: Int){
+    this.selectedTab = value
+  }
+
   fun interface TabChangeListener{
     fun onChangeTab(index: Int)
   }
