@@ -18,8 +18,9 @@ export default function ThirdPage() {
         <Button
           label="Go To Four"
           onPress={() => {
-            ReactNavPage.push({
+            ReactNavPage.pushWithRegister({
               routeName: 'FourPage',
+              component: require('./FourPage').default,
               params: {
                 count,
               },

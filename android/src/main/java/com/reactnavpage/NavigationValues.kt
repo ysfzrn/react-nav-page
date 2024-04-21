@@ -14,26 +14,30 @@ class NavigationValues {
   private var selectedTab: Int = 0
   private val reactRootViews = mutableMapOf<String, ReactRootView>()
 
-  fun putReactRootView(key:String, reactRootView: ReactRootView){
-    reactRootViews[key] = reactRootView
+  fun putReactRootView(tag:String, reactRootView: ReactRootView){
+    reactRootViews[tag] = reactRootView
   }
 
-  fun getReactRootView(key: String): ReactRootView? {
-    return reactRootViews[key]
+  fun getReactRootView(tag: String): ReactRootView? {
+    return reactRootViews[tag]
   }
-  fun removeReactRootView(key: String) {
-    val reactRootView = getReactRootView(key)
-    reactRootView?.unmountReactApplication()
-    reactRootViews.remove(key)
+
+  fun getReactRootViews(): MutableMap<String, ReactRootView> {
+    return reactRootViews
+  }
+  fun removeReactRootView(tag: String) {
+    val reactRootView = getReactRootView(tag)
+    //reactRootView?.unmountReactApplication()
+    reactRootViews.remove(tag)
   }
 
   fun clearReactRootViews() {
-    val keysToRemove = mutableListOf<String>()
-    reactRootViews.forEach { (key, _) ->
-      keysToRemove.add(key)
+    val tagsToRemove = mutableListOf<String>()
+    reactRootViews.forEach { (tag, _) ->
+      tagsToRemove.add(tag)
     }
-    keysToRemove.forEach { key ->
-      removeReactRootView(key)
+    tagsToRemove.forEach { tag ->
+      removeReactRootView(tag)
     }
   }
 

@@ -1,7 +1,12 @@
-import { useEffect } from 'react';
-import { NativeEventEmitter, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { NativeEventEmitter, Platform, AppRegistry } from 'react-native';
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
-import type { pushTypes, rootTypes } from './types';
+import type {
+  pushTypes,
+  pushWithRegisterTypes,
+  registerTypes,
+  rootTypes,
+} from './types';
 
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
@@ -25,6 +30,56 @@ class ReactNavPage {
     }
     ReactNavPageModule.push(routeName, params);
   };
+
+  pushWithRegister = ({
+    routeName,
+    params,
+    callback,
+    component,
+  }: pushWithRegisterTypes) => {
+    this.registerComponent({
+      route: routeName,
+      Component: component,
+      initialProps: { params },
+    });
+    if (callback) {
+      const newInstance = new Date().getTime().toString(36);
+      this.instance[newInstance] = {
+        callback: callback,
+      };
+    }
+    ReactNavPageModule.push(routeName, params);
+  };
+
+  registerComponent({
+    route,
+    Component,
+    Provider,
+    initialProps,
+  }: registerTypes) {
+    if (AppRegistry.getAppKeys()?.indexOf(route) === -1) {
+      let ComponentWithProps = (p: any) => {
+        const props = { ...initialProps, ...p };
+        return <Component {...props} />;
+      };
+
+      if (Provider) {
+        ComponentWithProps = (p: any) => {
+          const propsWithProvider = {
+            ...initialProps,
+            ...p,
+          };
+          return (
+            <Provider>
+              <Component {...propsWithProvider} />
+            </Provider>
+          );
+        };
+      }
+
+      AppRegistry.registerComponent(route, () => ComponentWithProps);
+    }
+  }
 
   pop = () => {
     ReactNavPageModule.pop();

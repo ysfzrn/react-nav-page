@@ -3,7 +3,6 @@ package com.reactnavpage
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController.OnDestinationChangedListener
 import com.facebook.react.ReactActivity
@@ -32,6 +31,7 @@ open class ReactNavPageActivity: ReactActivity() {
   }
 
   open fun setRoot(type: String?, routeName: String, stacks: ReadableMap?, tabBar: ReadableMap?, initialProps: ReadableMap?){
+    postponeEnterTransition()
     if(type == "STACK"){
       ReactNavPageModule.navigationValues.clearReactRootViews()
       val stackFragment = StackContainer(routeName)
@@ -81,12 +81,13 @@ open class ReactNavPageActivity: ReactActivity() {
   private fun onBackHandler(): Boolean {
     val navController = ReactNavPageModule.navigationValues.getCurrentNavController()
     val currentRoute = ReactNavPageModule.navigationValues.getCurrentRoute()
+    val currentLabel = navController.currentDestination?.label
     if (currentRoute != null) {
       val currentTab = ReactNavPageModule.navigationValues.getSelectedTab()
       navigationState[currentTab.toString()]?.let { routeList ->
         if (routeList.isNotEmpty()) {
           if(routeList.size > 1){
-            ReactNavPageModule.navigationValues.removeReactRootView(currentRoute)
+            ReactNavPageModule.navigationValues.removeReactRootView(currentLabel.toString())
             navController.popBackStack()
           }else{
             navController.popBackStack()
@@ -106,7 +107,6 @@ open class ReactNavPageActivity: ReactActivity() {
     OnDestinationChangedListener { controller, destination, arguments ->
       val route = destination.route.toString()
       val reactContext = ReactNavPageModule.navigationValues.getReactInstance().currentReactContext
-      Log.d("onRouteChange", route)
 
       val params = Arguments.createMap().apply {
         putString("routeName", route)
@@ -115,7 +115,6 @@ open class ReactNavPageActivity: ReactActivity() {
       val handler = Handler(Looper.getMainLooper())
       handler.postDelayed({
         eventManager.sendEvent(reactContext as ReactApplicationContext?, "onRouteChange", params)
-        Log.d("onRouteChange", navigationState.toString())
       }, 100)
     }
 }

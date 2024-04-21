@@ -11,7 +11,8 @@ fun dpToPx(dp: Double): Int {
 fun navigationStateUpdate(activity: ReactNavPageActivity, eventType: String){
   val currentTab = ReactNavPageModule.navigationValues.getSelectedTab()
   val navController = ReactNavPageModule.navigationValues.getCurrentNavController()
-  var currentRoute = navController.currentBackStackEntry?.destination?.route
+  val currentRouteTag = navController.currentDestination?.label
+  val currentRoute = navController.currentBackStackEntry?.destination?.route
 
   if(eventType == "root"){
     ReactNavPageModule.navigationValues.setSelectedTab(0)
@@ -20,10 +21,12 @@ fun navigationStateUpdate(activity: ReactNavPageActivity, eventType: String){
     activity.navigationState[currentTab.toString()] = mutableListOf()
     val newRouteMap = mutableMapOf<String, String>()
     newRouteMap["routeName"] = currentRoute.toString()
+    newRouteMap["tag"] = currentRouteTag.toString()
     activity.navigationState[currentTab.toString()]?.add(newRouteMap)
   }else if(eventType == "push"){
     val newRouteMap = mutableMapOf<String, String>()
     newRouteMap["routeName"] = currentRoute.toString()
+    newRouteMap["tag"] = currentRouteTag.toString()
     activity.navigationState[currentTab.toString()]?.add(newRouteMap)
   }else if(eventType == "pop"){
     activity.navigationState[currentTab.toString()]?.let { routeList ->
@@ -41,6 +44,7 @@ fun navigationStateUpdate(activity: ReactNavPageActivity, eventType: String){
       activity.navigationState[currentTab.toString()] = mutableListOf()
       val newRouteMap = mutableMapOf<String, String>()
       newRouteMap["routeName"] = currentRoute.toString()
+      newRouteMap["tag"] = currentRouteTag.toString()
       activity.navigationState[currentTab.toString()]?.add(newRouteMap)
     }
   }

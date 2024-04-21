@@ -68,17 +68,18 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
         if (destination != null) {
           navController.graph.addDestination(destination)
           val builder = NavOptions.Builder()
-          navController.graph.findStartDestination().id
-          /*navController.graph.findStartDestination().id.let {
+          //navController.graph.findStartDestination().id
+          navController.graph.findStartDestination().id.let {
             builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
             builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
             builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
             builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
-          }*/
+          }
 
           val options = builder.build()
 
           if (routeName != null) {
+            currentActivity.postponeEnterTransition()
             navController.navigate(routeName, options )
             navigationStateUpdate(currentActivity, "push")
           }
@@ -92,10 +93,12 @@ class ReactNavPageModule(reactContext: ReactApplicationContext) :
     UiThreadUtil.runOnUiThread(Runnable {
       val currentActivity = currentActivity as ReactNavPageActivity
       val currentRoute = navigationValues.getCurrentRoute()
-      if (currentRoute != null) {
-        navigationValues.removeReactRootView(currentRoute)
-      }
       val navController = navigationValues.getCurrentNavController()
+      val currentRouteTag = navController.currentDestination?.label
+
+      if (currentRouteTag != null) {
+        navigationValues.removeReactRootView(currentRouteTag.toString())
+      }
       navController.popBackStack()
       navigationStateUpdate(currentActivity, "pop")
     })

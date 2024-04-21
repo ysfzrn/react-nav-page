@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
 import ReactNavPage, { useTabChange } from 'react-nav-page';
 
@@ -25,24 +18,8 @@ export const TabBar = () => {
   }, []);
 
   useTabChange((index: number) => {
-    console.log('selectedIndex', selectedIndex);
     setSelectedIndex(index);
   });
-
-  const onAlert = () => {
-    Alert.alert('Alert Title', 'My Alert Msg', [
-      {
-        text: 'Ask me later',
-        onPress: () => console.log('Ask me later pressed'),
-      },
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      { text: 'OK', onPress: () => onAlert() },
-    ]);
-  };
 
   return (
     <View style={styles.wrapper}>
@@ -57,17 +34,26 @@ export const TabBar = () => {
             resizeMode="contain"
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer} onPress={onAlert}>
-          <View style={styles.plus}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => ReactNavPage.changeTab(1)}
+          activeOpacity={0.94}
+        >
+          <View
+            style={[
+              styles.plus,
+              { backgroundColor: selectedIndex === 1 ? '#E91E63' : '#37474f' },
+            ]}
+          >
             <Text style={styles.plusText}>+</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => ReactNavPage.changeTab(1)}
+          onPress={() => ReactNavPage.changeTab(2)}
         >
           <Image
-            source={selectedIndex === 1 ? ProfileSelected : ProfileUnSelected}
+            source={selectedIndex === 2 ? ProfileSelected : ProfileUnSelected}
             style={[styles.icon, { tintColor: '#ff9800' }]}
             resizeMode="contain"
           />

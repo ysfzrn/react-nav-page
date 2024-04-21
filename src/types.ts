@@ -1,3 +1,4 @@
+import type { FC } from 'react';
 import type {
   Float,
   UnsafeObject,
@@ -7,6 +8,17 @@ export type pushTypes = {
   routeName: string;
   params: UnsafeObject;
   callback?: Function;
+};
+
+export type pushWithRegisterTypes = pushTypes & {
+  component: FC;
+};
+
+export type registerTypes = {
+  route: string;
+  Component: FC;
+  Provider?: React.FC<{ children: React.ReactNode }>;
+  initialProps?: any;
 };
 
 export type tabTypes = {

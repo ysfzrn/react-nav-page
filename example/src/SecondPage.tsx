@@ -32,8 +32,9 @@ export default function SecondPage(props: any) {
       <Button
         label="Go To Second Page"
         onPress={() => {
-          ReactNavPage.push({
+          ReactNavPage.pushWithRegister({
             routeName: 'FirstPage',
+            component: require('./FirstPage').default,
             params: {
               count,
             },

@@ -55,8 +55,9 @@ class TabStackContainer(
     }
 
 
+    val startDestination = tabs.getMap(0).getString("routeName")
     val mainNavGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-    mainNavGraph.setStartDestination("FirstPage")
+    mainNavGraph.setStartDestination(startDestination!!)
 
 
     for (i in 0 until tabs.size()) {
@@ -120,7 +121,7 @@ class TabStackContainer(
     }
     val reactContext = ReactNavPageModule.navigationValues.getReactInstance().currentReactContext
     eventManager.sendEvent(reactContext as ReactApplicationContext?, "onTabChange", params)
-    
+
     bottomNavigationView.selectedItemId = index
     val currentNavController = ReactNavPageModule.navigationValues.getCurrentNavController()
     val destinationId = currentNavController.graph.findStartDestination().id
@@ -136,16 +137,17 @@ class TabStackContainer(
     )
 
 
-    //builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
-    //builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
-    //builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
-    //builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
+    builder.setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
+    builder.setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
+    builder.setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
+    builder.setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
 
 
     val options = builder.build()
 
     if (tabRoute != null) {
       try {
+        activity?.postponeEnterTransition()
         currentNavController.navigate(tabRoute, options)
       } catch (e: IllegalArgumentException) {
         val name = NavDestination.getDisplayName(currentNavController.context, destinationId)
