@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { NativeEventEmitter, Platform, AppRegistry } from 'react-native';
+export { default as ReactNavPageHeaderView } from './ReactNavPageHeaderViewNativeComponent';
+export * from './ReactNavPageHeaderViewNativeComponent';
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import type {
   pushTypes,

@@ -8,15 +8,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import ReactNavPage, { useRouteChange } from 'react-nav-page';
+import ReactNavPage from 'react-nav-page';
 import { Button } from './components/Button';
 
 export default function FirstPage() {
   const [count, setCount] = useState(0);
-
-  useRouteChange((event: any) => {
-    console.log('Current Route Name', event.routeName);
-  });
 
   useEffect(() => {
     return () => {
@@ -64,10 +60,10 @@ export default function FirstPage() {
                 type: 'TAB_STACK',
                 stacks: [
                   {
-                    routeName: 'FirstPage',
+                    routeName: 'FivePage',
                   },
                   {
-                    routeName: 'FivePage',
+                    routeName: 'FirstPage',
                   },
                   {
                     routeName: 'ThirdPage',
@@ -118,5 +114,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 5,
     paddingVertical: 10,
+  },
+  box: {
+    width: 60,
+    height: 60,
+    marginVertical: 20,
+    top: 100,
+    left: 100,
   },
 });

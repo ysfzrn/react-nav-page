@@ -28,38 +28,40 @@ export default function SecondPage(props: any) {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Button
-        label="Go To Second Page"
-        onPress={() => {
-          ReactNavPage.pushWithRegister({
-            routeName: 'FirstPage',
-            component: require('./FirstPage').default,
-            params: {
-              count,
-            },
-          });
-        }}
-      />
-      <Button
-        label="POP"
-        onPress={() => {
-          ReactNavPage.setResult(100);
-          ReactNavPage.pop();
-        }}
-      />
-      <Button
-        label="LOG OUT"
-        onPress={() => {
-          ReactNavPage.setRoot({
-            type: 'STACK',
-            routeName: 'FirstPage',
-            params: {},
-          });
-        }}
-      />
-      <Text style={styles.count}>{count}</Text>
-    </View>
+    <>
+      <View style={styles.container}>
+        <Button
+          label="Go To Second Page"
+          onPress={() => {
+            ReactNavPage.pushWithRegister({
+              routeName: 'FirstPage',
+              component: require('./FirstPage').default,
+              params: {
+                count,
+              },
+            });
+          }}
+        />
+        <Button
+          label="POP"
+          onPress={() => {
+            ReactNavPage.setResult(100);
+            ReactNavPage.pop();
+          }}
+        />
+        <Button
+          label="LOG OUT"
+          onPress={() => {
+            ReactNavPage.setRoot({
+              type: 'STACK',
+              routeName: 'FirstPage',
+              params: {},
+            });
+          }}
+        />
+        <Text style={styles.count}>{count}</Text>
+      </View>
+    </>
   );
 }
 

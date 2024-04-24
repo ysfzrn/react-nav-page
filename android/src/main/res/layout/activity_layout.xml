@@ -10,6 +10,16 @@
   android:clipChildren="false"
   android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
+  <androidx.appcompat.widget.Toolbar
+    android:id="@+id/my_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="#673ab7"
+    android:elevation="4dp"
+    android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    tools:ignore="MissingConstraints" />
+
   <FrameLayout
     android:id="@+id/main_container"
     android:layout_width="match_parent"

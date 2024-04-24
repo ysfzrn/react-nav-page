@@ -1,6 +1,7 @@
 #import <React/RCTRootView.h>
 #import "RCTAppSetupUtils.h"
 #import "RootViewUtil.h"
+#import "ReactNavPageHeaderView.h"
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -42,5 +43,54 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 #endif
 }
 
+
+- (BOOL)isReactNavPageHeaderView {
+    return [self isKindOfClass:[ReactNavPageHeaderView class]];
+}
+
++ (UIView *)findAppBarInView:(UIView *)view {
+    if ([view respondsToSelector:@selector(isReactNavPageHeaderView)]) {
+        return view;
+    }
+    
+    for (UIView *subview in view.subviews) {
+        UIView *foundView = [self findAppBarInView:subview];
+        if (foundView) {
+            return foundView;
+        }
+    }
+    
+    return nil;
+}
+
++ (UIView *)cloneView:(UIView *)view {
+    NSData *archivedData = [NSKeyedArchiver archivedDataWithRootObject:view];
+    UIView *clonedView = [NSKeyedUnarchiver unarchiveObjectWithData:archivedData];
+    return clonedView;
+}
+//foundView = [self cloneView:view];
+
++ (UIView *)findReactNavPageHeaderViewInView:(UIView *)view {
+    // Eğer verilen view bir ReactNavPageHeaderView ise doğrudan geri dön
+    NSLog(@"aaa-%@", view);
+
+    if ([view isKindOfClass:NSClassFromString(@"ReactNavPageHeaderView")]) {
+        return [self cloneView:view];
+    }
+    
+    // Eğer view'in altında başka bir view varsa, onları da tarayarak ReactNavPageHeaderView bulmaya çalış
+    for (UIView *subview in view.subviews) {
+        UIView *foundView = [self findReactNavPageHeaderViewInView:subview];
+        if (foundView) {
+            return [self cloneView:foundView];
+        }
+    }
+    
+    // Eğer hiçbir alt view'de ReactNavPageHeaderView bulunamadıysa nil döndür
+    return nil;
+}
+
 @end
+
+
 

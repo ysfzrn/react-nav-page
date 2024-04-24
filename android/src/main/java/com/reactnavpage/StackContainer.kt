@@ -9,12 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
+import androidx.navigation.ui.AppBarConfiguration
 
 class StackContainer(
   private val routeName:String
 ): Fragment() {
   private var created = false
   private var layout: View? = null
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -43,5 +45,7 @@ class StackContainer(
     }
     navController.setGraph(newGraph, null)
     ReactNavPageModule.navigationValues.setCurrentNavController(navController)
+    val appBarConfiguration = AppBarConfiguration(navController.graph)
+    (activity as ReactNavPageActivity).setActionBar(appBarConfiguration)
   }
 }

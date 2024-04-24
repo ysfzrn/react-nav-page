@@ -14,6 +14,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
@@ -90,6 +91,8 @@ class TabStackContainer(
 
     ReactNavPageModule.navigationValues.setCurrentNavController(navController)
     ReactNavPageModule.navigationValues.setTabNavController(navController)
+    val appBarConfiguration = AppBarConfiguration(navController.graph)
+    (activity as ReactNavPageActivity).setActionBar(appBarConfiguration)
 
     return layout
   }

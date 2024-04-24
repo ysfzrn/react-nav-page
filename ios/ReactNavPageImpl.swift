@@ -17,11 +17,28 @@ public protocol ReactNavPageImplDelegate {
 public class ReactNavPageImpl : NSObject {
     @objc public static var sharedInstance = ReactNavPageImpl()
     @objc public weak var delegate: ReactNavPageImplDelegate? = nil
+    var appBarRootView: UIView?
+    var appBar:UIView?
     var bridge: RCTBridge?
+    
+    
+    deinit {
+        print("lifecycle ReactNavPageImpl viewWillDisappear")
+        ReactNavPageImpl.sharedInstance.appBar?.removeFromSuperview()
+        ReactNavPageImpl.sharedInstance.appBar = nil
+        ReactNavPageImpl.sharedInstance.appBarRootView?.removeFromSuperview()
+        ReactNavPageImpl.sharedInstance.appBarRootView = nil
+    }
+
     
     @objc(setBridge:)
     class func setBridge(bridge: RCTBridge) {
         ReactNavPageImpl.sharedInstance.bridge = bridge
+        let initialProps: [String: Any] = [
+            "params": ""
+        ]
+        ReactNavPageImpl.sharedInstance.appBarRootView = RootViewUtil.createRootView(bridge, moduleName: "AppBar", initProps: initialProps)
+        ReactNavPageImpl.sharedInstance.appBar = RootViewUtil.findReactNavPageHeaderView(in: ReactNavPageImpl.sharedInstance.appBarRootView)
     }
     
     public func sendEvent(name: String, payload: Dictionary<String, Any>) {
@@ -35,8 +52,11 @@ public class ReactNavPageImpl : NSObject {
     
     @objc public func push(routeName: NSString, params: NSDictionary) -> Void {
            DispatchQueue.main.async {
+               if(ReactNavPageImpl.sharedInstance.appBar == nil){
+                   ReactNavPageImpl.sharedInstance.appBar = RootViewUtil.findReactNavPageHeaderView(in: ReactNavPageImpl.sharedInstance.appBarRootView)
+               }
                let rootViewController = getTopViewController();
-               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params)
+               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: self.bridge!, initialProps: params, appBar: ReactNavPageImpl.sharedInstance.appBar)
                rootViewController.navigationController?.pushViewController(rootVC, animated: true)
            }
     }
@@ -76,12 +96,15 @@ public class ReactNavPageImpl : NSObject {
             transition.subtype = CATransitionSubtype.fromRight
             
             if(type == "STACK"){
-                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary)
+                if(ReactNavPageImpl.sharedInstance.appBar == nil){
+                    ReactNavPageImpl.sharedInstance.appBar = RootViewUtil.findReactNavPageHeaderView(in: ReactNavPageImpl.sharedInstance.appBarRootView)
+                }
+
+                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, appBar: ReactNavPageImpl.sharedInstance.appBar)
                 // Change rootViewController
                 let navCtrller = RootViewUtil.wrapperNavigationController(rootVC, storyboardName: "LaunchScreen")
                 UIApplication.shared.keyWindow?.layer.add(transition, forKey: kCATransition)
                 UIApplication.shared.keyWindow?.rootViewController = navCtrller
-                
                 navCtrller?.navigationController?.pushViewController(rootVC, animated: false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.sendEvent(name: "onRouteChange", payload: ["routeName": routeName ])
@@ -92,15 +115,18 @@ public class ReactNavPageImpl : NSObject {
                 let tabBarController = TabBarController(tabBarName: tabBarName!, bridge:ReactNavPageImpl.sharedInstance.bridge! , initialProps:  initialProps as NSDictionary, tabBarHeight: tabBarHeight!)
                 var navControllers: [UINavigationController] = []
                 
-                var tabStacks = stacks["tabs"] as! NSArray
+                let tabStacks = stacks["tabs"] as! NSArray
                 for stack in tabStacks {
                     let tabStack = stack as? NSDictionary
                     let tabName = tabStack?["routeName"] as? String
                     
-                    let rootVC = ReactNavPageController(routeName: tabName! as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary)
+                    if(ReactNavPageImpl.sharedInstance.appBar == nil){
+                        ReactNavPageImpl.sharedInstance.appBar = RootViewUtil.findReactNavPageHeaderView(in: ReactNavPageImpl.sharedInstance.appBarRootView)
+                    }
+                    
+                    let rootVC = ReactNavPageController(routeName: tabName! as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, appBar: ReactNavPageImpl.sharedInstance.appBar)
                     let nv =  UINavigationController(rootViewController: rootVC)
                     navControllers.append(nv)
-                    
                     print(tabName as Any)
                 }
                 tabBarController.setViewControllers(navControllers, animated: true)

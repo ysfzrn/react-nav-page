@@ -1,14 +1,21 @@
 package com.reactnavpage
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController.OnDestinationChangedListener
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.facebook.react.ReactActivity
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -16,13 +23,15 @@ open class ReactNavPageActivity: ReactActivity() {
   private val eventManager = EventManager();
   private var currentStackType: String = "STACK"
   var navigationState: MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
+  private lateinit var appBarConfiguration: AppBarConfiguration
 
 
+
+  @SuppressLint("MissingInflatedId")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_layout)
     ReactNavPageModule.navigationValues.setReactInstance(reactInstanceManager)
-
     val splashFragment = mainComponentName?.let { StackContainer(it) }
     if (splashFragment != null) {
       supportFragmentManager.beginTransaction()
@@ -47,6 +56,13 @@ open class ReactNavPageActivity: ReactActivity() {
     }
     ReactNavPageModule.navigationValues.getCurrentNavController().removeOnDestinationChangedListener(routeChangeListener)
     ReactNavPageModule.navigationValues.getCurrentNavController().addOnDestinationChangedListener(routeChangeListener)
+  }
+
+  open fun setActionBar(appBarConfiguration: AppBarConfiguration){
+    val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.my_toolbar)
+    setSupportActionBar(toolbar)
+    val navController = ReactNavPageModule.navigationValues.getCurrentNavController()
+    setupActionBarWithNavController(navController, appBarConfiguration)
   }
 
   private fun loadFragment(stackFragment: Fragment, tag:String){

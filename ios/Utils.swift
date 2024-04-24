@@ -26,3 +26,25 @@ func topViewControllerWithRootViewController(rootViewController:UIViewController
     }
     return rootViewController
 }
+
+func findView(withTag tag: Int, in view: UIView) -> UIView? {
+    // Eğer view'ın tag'i aranan tag'e eşitse, view'i döndür
+    if view.tag == tag {
+        return view
+    }
+    
+    // Eğer view'in altında subview'ler varsa, her birini kontrol et
+    for subview in view.subviews {
+        // Her bir subview için findView fonksiyonunu tekrar çağır
+        if let foundView = findView(withTag: tag, in: subview) {
+            // Eğer aranan view bulunduysa, bulunan view'i döndür
+            return foundView
+        }
+    }
+    
+    // Aranan view bu view'in altında bulunamadı, nil döndür
+    return nil
+}
+
+ 
+
