@@ -4,6 +4,15 @@ import type {
   UnsafeObject,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
+export type Node = {
+  uniqueID: string;
+  routeName: string;
+  callback?: Function;
+  neighbors: Node[];
+};
+
+export type Graph = Node[];
+
 export type pushTypes = {
   routeName: string;
   params: UnsafeObject;

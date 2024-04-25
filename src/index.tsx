@@ -2,11 +2,19 @@ import React, { useEffect } from 'react';
 import { NativeEventEmitter, Platform, AppRegistry } from 'react-native';
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import type {
+  Graph,
+  Node,
   pushTypes,
   pushWithRegisterTypes,
   registerTypes,
   rootTypes,
 } from './types';
+import {
+  addNode,
+  findLastNeighbor,
+  getNodeByID,
+  popLastNeighborOfLastNode,
+} from './graph/NavigationGraph';
 
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
@@ -14,20 +22,52 @@ const moduleEventEmitter = new NativeEventEmitter(
   Platform.OS === 'ios' ? ReactNavPageModule : undefined
 );
 
+const getUniqueID = () => {
+  return new Date().getTime().toString(36);
+};
+
 class ReactNavPage {
-  instance: any;
+  callbacks: [];
+  navigationGraph: Graph;
+  currentNavigationType: string;
+  currentTab: Int32;
+  currentRoute: string;
+  currentRouteID: string;
 
   constructor() {
-    this.instance = {};
+    this.callbacks = [];
+    this.navigationGraph = [];
+    this.currentNavigationType = 'STACK';
+    this.currentTab = 0;
+    this.currentRoute = '';
+    this.currentRouteID = '';
+    moduleEventEmitter.addListener('onRouteChange', (event: any) => {
+      console.log('navigationGraph', JSON.stringify(this.navigationGraph));
+      console.log('this.callbacks', this.callbacks);
+      this.currentRoute = event.routeName;
+    });
+    moduleEventEmitter.addListener('onTabChange', (event: any) => {
+      this.currentTab = event.tabIndex;
+    });
   }
 
   push = ({ routeName, params, callback }: pushTypes) => {
+    const currentNode = getNodeByID(this.navigationGraph, `${this.currentTab}`);
+    const uniqueID = getUniqueID();
+    const neighbor: Node = {
+      uniqueID: uniqueID,
+      routeName: routeName,
+      callback: callback,
+      neighbors: [],
+    };
+
     if (callback) {
-      const newInstance = new Date().getTime().toString(36);
-      this.instance[newInstance] = {
+      this.callbacks.push({
+        uniqueID: uniqueID,
         callback: callback,
-      };
+      });
     }
+    currentNode!.neighbors.push(neighbor);
     ReactNavPageModule.push(routeName, params);
   };
 
@@ -42,13 +82,7 @@ class ReactNavPage {
       Component: component,
       initialProps: { params },
     });
-    if (callback) {
-      const newInstance = new Date().getTime().toString(36);
-      this.instance[newInstance] = {
-        callback: callback,
-      };
-    }
-    ReactNavPageModule.push(routeName, params);
+    this.push({ routeName, params, callback });
   };
 
   registerComponent({
@@ -82,6 +116,13 @@ class ReactNavPage {
   }
 
   pop = () => {
+    const currentNode = findLastNeighbor(this.navigationGraph, this.currentTab);
+    console.log('currentNode?.uniqueID', currentNode);
+    const newCallbacks = this.callbacks.filter(
+      (cb) => cb.uniqueID !== currentNode?.uniqueID
+    );
+    this.callbacks = newCallbacks;
+    popLastNeighborOfLastNode(this.navigationGraph, this.currentTab);
     ReactNavPageModule.pop();
   };
 
@@ -92,9 +133,32 @@ class ReactNavPage {
     params = {},
     stacks = [],
   }: rootTypes) => {
+    this.callbacks = [];
+    this.navigationGraph = [];
     const stacksObj = {
       tabs: stacks,
     };
+
+    if (type === 'STACK') {
+      this.currentRouteID = getUniqueID();
+      const node: Node = {
+        uniqueID: `0`,
+        routeName: routeName,
+        neighbors: [],
+      };
+      addNode(this.navigationGraph, node);
+    } else if (type === 'TAB_STACK') {
+      for (let index = 0; index < stacks.length; index++) {
+        const stack = stacks[index];
+        const node: Node = {
+          uniqueID: `${index}`,
+          routeName: stack?.routeName,
+          neighbors: [],
+        };
+        addNode(this.navigationGraph, node);
+      }
+    }
+
     ReactNavPageModule.setRoot(type, routeName, params, stacksObj, tabBar);
   };
 
@@ -103,19 +167,15 @@ class ReactNavPage {
   };
 
   setResult(args: any) {
-    const currentInstanceKey = this.getCurrentInstanceKey();
-    const currentInstance = this.instance[currentInstanceKey];
+    const currentNode = findLastNeighbor(this.navigationGraph, this.currentTab);
+    const callbackObject = this.callbacks.find(
+      (cb) => cb?.uniqueID === currentNode?.uniqueID
+    );
 
-    if (currentInstance) {
-      currentInstance?.callback(args);
+    if (callbackObject) {
+      callbackObject?.callback(args);
     }
   }
-
-  getCurrentInstanceKey = () => {
-    const instances = Object.keys(this.instance);
-    const currentInstanceKey = instances[instances.length - 1] || '';
-    return currentInstanceKey;
-  };
 }
 
 export const useRouteChange = (callback: Function) => {
@@ -139,7 +199,6 @@ export const useTabChange = (callback: Function) => {
     const subscription = moduleEventEmitter.addListener(
       'onTabChange',
       (event: any) => {
-        console.log(event);
         callback(event.tabIndex);
       }
     );
