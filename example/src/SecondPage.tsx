@@ -34,9 +34,13 @@ export default function SecondPage(props: any) {
         onPress={() => {
           ReactNavPage.pushWithRegister({
             routeName: 'FirstPage',
+            title: 'First Page',
             component: require('./FirstPage').default,
             params: {
               count,
+            },
+            navOptions: {
+              headerBackgroundColor: '#2196F3',
             },
           });
         }}
@@ -44,7 +48,6 @@ export default function SecondPage(props: any) {
       <Button
         label="POP"
         onPress={() => {
-          ReactNavPage.setResult(100);
           ReactNavPage.pop();
         }}
       />
@@ -54,6 +57,7 @@ export default function SecondPage(props: any) {
           ReactNavPage.setRoot({
             type: 'STACK',
             routeName: 'FirstPage',
+            title: 'First Page',
             params: {},
           });
         }}

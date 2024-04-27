@@ -42,21 +42,22 @@ RCT_EXPORT_MODULE(ReactNavPage)
     [ReactNavPageImpl.sharedInstance pop];
 }
 
-
-
-- (void)push:(NSString *)routeName params:(NSDictionary *)params { 
-    [ReactNavPageImpl.sharedInstance pushWithRouteName:routeName params:params];
-}
-
-- (void)setRoot:(NSString *)type routeName:(NSString *)routeName initialProps:(NSDictionary *)initialProps stacks:(NSDictionary *)stacks tabBar:(NSDictionary *)tabBar {
-    NSArray *valArray = [NSArray arrayWithObjects: stacks, nil];
-    [ReactNavPageImpl.sharedInstance setRootWithRouteName:routeName type:type initialProps:initialProps stacks:valArray[0] tabBar:tabBar];
-}
-
 - (void)changeTab:(double)index { 
     [ReactNavPageImpl.sharedInstance changeTabWithIndex:index];
 }
 
+- (void)push:(NSString *)routeName title:(NSString *)title navOptions:(NSDictionary *)navOptions params:(NSDictionary *)params {
+    [ReactNavPageImpl.sharedInstance pushWithRouteName:routeName title:title params:params navOptions:navOptions];
+}
+
+- (void)setRoot:(NSString *)type routeName:(NSString *)routeName title:(NSString *)title initialProps:(NSDictionary *)initialProps navOptions:(NSDictionary *)navOptions tabBar:(NSDictionary *)tabBar stacks:(NSDictionary *)stacks { 
+    NSArray *valArray = [NSArray arrayWithObjects: stacks, nil];
+    [ReactNavPageImpl.sharedInstance setRootWithRouteName:routeName type:type initialProps:initialProps stacks:valArray[0] tabBar:tabBar title:title navOptions:navOptions];
+}
+
+- (void)setNavBarAlpha:(double)alpha {
+    [ReactNavPageImpl.sharedInstance setNavBarAlphaWithAlpha:alpha];
+}
 
 
 
@@ -72,7 +73,7 @@ RCT_EXPORT_MODULE(ReactNavPage)
 }
 
 - (NSArray<NSString *> *)supportedEvents{
-    return @[@"onRouteChange", @"onTabChange"];
+    return @[@"onRouteChange", @"onTabChange", @"onAppBarPress"];
 }
 
 
@@ -87,6 +88,13 @@ RCT_EXPORT_MODULE(ReactNavPage)
       [self sendEventWithName:name body:payload];
     }
 }
+
+- (void)sendAppBarPressEventWithName:(NSString * _Nonnull)name payload:(NSDictionary<NSString *,id> * _Nonnull)payload { 
+    [self sendEventWithName:name body:payload];
+}
+
+
+
 
 
 

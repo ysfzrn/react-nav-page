@@ -1,7 +1,13 @@
-import React, { useEffect } from 'react';
-import { NativeEventEmitter, Platform, AppRegistry } from 'react-native';
-import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
+import React, { useContext, useEffect } from 'react';
+import {
+  NativeEventEmitter,
+  Platform,
+  AppRegistry,
+  RootTagContext,
+} from 'react-native';
+import type { Float, Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import type {
+  appBarTypes,
   pushTypes,
   pushWithRegisterTypes,
   registerTypes,
@@ -15,40 +21,25 @@ const moduleEventEmitter = new NativeEventEmitter(
 );
 
 class ReactNavPage {
-  instance: any;
+  constructor() {}
 
-  constructor() {
-    this.instance = {};
-  }
-
-  push = ({ routeName, params, callback }: pushTypes) => {
-    if (callback) {
-      const newInstance = new Date().getTime().toString(36);
-      this.instance[newInstance] = {
-        callback: callback,
-      };
-    }
+  push = ({ routeName, params }: pushTypes) => {
     ReactNavPageModule.push(routeName, params);
   };
 
   pushWithRegister = ({
     routeName,
     params,
-    callback,
     component,
+    title,
+    navOptions,
   }: pushWithRegisterTypes) => {
     this.registerComponent({
       route: routeName,
       Component: component,
       initialProps: { params },
     });
-    if (callback) {
-      const newInstance = new Date().getTime().toString(36);
-      this.instance[newInstance] = {
-        callback: callback,
-      };
-    }
-    ReactNavPageModule.push(routeName, params);
+    ReactNavPageModule.push(routeName, title, navOptions, params);
   };
 
   registerComponent({
@@ -91,30 +82,58 @@ class ReactNavPage {
     tabBar = {},
     params = {},
     stacks = [],
+    title = '',
+    navOptions,
   }: rootTypes) => {
     const stacksObj = {
       tabs: stacks,
     };
-    ReactNavPageModule.setRoot(type, routeName, params, stacksObj, tabBar);
+    ReactNavPageModule.setRoot(
+      type,
+      routeName,
+      title,
+      params,
+      navOptions,
+      tabBar,
+      stacksObj
+    );
   };
 
   changeTab = (index: Int32) => {
     ReactNavPageModule.changeTab(index);
   };
 
-  setResult(args: any) {
-    const currentInstanceKey = this.getCurrentInstanceKey();
-    const currentInstance = this.instance[currentInstanceKey];
+  setNavBarAlpha = (alpha: Float) => {
+    ReactNavPageModule.setNavBarAlpha(alpha);
+  };
 
-    if (currentInstance) {
-      currentInstance?.callback(args);
+  registerAppBar = ({
+    LeftBarComponent,
+    TitleBarComponent,
+    RightBarComponent,
+    Provider,
+  }: appBarTypes) => {
+    if (LeftBarComponent) {
+      this.registerComponent({
+        route: 'LeftButtonView',
+        Component: LeftBarComponent,
+        Provider: Provider,
+      });
     }
-  }
-
-  getCurrentInstanceKey = () => {
-    const instances = Object.keys(this.instance);
-    const currentInstanceKey = instances[instances.length - 1] || '';
-    return currentInstanceKey;
+    if (TitleBarComponent) {
+      this.registerComponent({
+        route: 'TitleView',
+        Component: TitleBarComponent,
+        Provider: Provider,
+      });
+    }
+    if (RightBarComponent) {
+      this.registerComponent({
+        route: 'RightButtonView',
+        Component: RightBarComponent,
+        Provider: Provider,
+      });
+    }
   };
 }
 
@@ -141,6 +160,27 @@ export const useTabChange = (callback: Function) => {
       (event: any) => {
         console.log(event);
         callback(event.tabIndex);
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
+export const useAppBarPress = (callback: Function) => {
+  const rootTag = useContext(RootTagContext);
+
+  useEffect(() => {
+    const subscription = moduleEventEmitter.addListener(
+      'onAppBarPress',
+      (event: any) => {
+        if (rootTag === event.rootTag) {
+          console.log(event);
+          callback(event);
+        }
       }
     );
 

@@ -8,6 +8,7 @@ export default function SplashPage() {
       ReactNavPage.setRoot({
         type: 'STACK',
         routeName: 'FirstPage',
+        title: 'First Page',
         params: {},
       });
     }, 500);

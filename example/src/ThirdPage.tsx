@@ -20,18 +20,21 @@ export default function ThirdPage() {
           onPress={() => {
             ReactNavPage.pushWithRegister({
               routeName: 'FourPage',
+              title: 'Four Page',
               component: require('./FourPage').default,
               params: {
                 count,
               },
-              callback: (v: number) => setCount(v),
+              navOptions: {
+                headerTransparent: true,
+                hederNavBarAlpha: 0,
+              },
             });
           }}
         />
         <Button
           label="POP"
           onPress={() => {
-            ReactNavPage.setResult(100);
             ReactNavPage.pop();
           }}
         />

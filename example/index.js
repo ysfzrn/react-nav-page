@@ -8,6 +8,8 @@ import FivePage from './src/FivePage';
 import { TabBar } from './src/components/TabBar';
 import { name as appName } from './app.json';
 import ReactNavPage from 'react-nav-page';
+import { TitleView } from './src/components/TitleView';
+import { LeftButtonView } from './src/components/LeftButtonView';
 
 ReactNavPage.registerComponent({
   route: appName,
@@ -32,4 +34,9 @@ ReactNavPage.registerComponent({
 ReactNavPage.registerComponent({
   route: 'MyTabBar',
   Component: TabBar,
+});
+
+ReactNavPage.registerAppBar({
+  LeftBarComponent: LeftButtonView,
+  TitleBarComponent: TitleView,
 });

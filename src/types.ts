@@ -4,10 +4,18 @@ import type {
   UnsafeObject,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
+export type navOptions = {
+  headerShow?: boolean;
+  headerTransparent?: boolean;
+  headerBackgroundColor?: string;
+  hederNavBarAlpha?: Float;
+};
+
 export type pushTypes = {
   routeName: string;
+  title: string;
   params: UnsafeObject;
-  callback?: Function;
+  navOptions?: navOptions;
 };
 
 export type pushWithRegisterTypes = pushTypes & {
@@ -21,6 +29,13 @@ export type registerTypes = {
   initialProps?: any;
 };
 
+export type appBarTypes = {
+  LeftBarComponent?: FC;
+  TitleBarComponent?: FC;
+  RightBarComponent?: FC;
+  Provider?: React.FC<{ children: React.ReactNode }>;
+};
+
 export type tabTypes = {
   tabBarComponentName?: string;
   tabBarHeight?: Float;
@@ -29,7 +44,9 @@ export type tabTypes = {
 export type rootTypes = {
   type: string;
   routeName?: string;
-  tabBar?: tabTypes;
+  title?: string;
   params?: UnsafeObject;
-  stacks?: UnsafeObject;
+  navOptions?: navOptions;
+  tabBar?: tabTypes;
+  stacks?: pushTypes[];
 };
