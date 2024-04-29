@@ -8,14 +8,16 @@
 import UIKit
 
 @objc(ReactNavPageController)
-public class ReactNavPageController: UIViewController, UIGestureRecognizerDelegate{
+public class ReactNavPageController: UIViewController, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate{
     var routeName: String = ""
     var rootTag: NSNumber = 0
     var bridge: RCTBridge
     var initialProps: NSDictionary
     var pageTitle: String = ""
     var navOptions: NSDictionary?
+    var popoverViewController: UIViewController!
         
+    
     
     init(routeName: String, bridge: RCTBridge, initialProps:NSDictionary, pageTitle: String, navOptions: NSDictionary?) {
         self.routeName = routeName
@@ -95,9 +97,12 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
             
             backNavView.backgroundColor = .clear
             backRootView?.backgroundColor = .clear
-            backRootView?.frame = backNavView.frame
+            backRootView?.frame = CGRect(x: 0, y: 0, width: 50, height: CGFloat(headerHeight))
             backNavView.addSubview(backRootView!)
 
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showPopover2))
+            backNavView.addGestureRecognizer(tapGesture)
+            
             
             let backNav = UIBarButtonItem(
                 customView: backNavView
@@ -106,7 +111,29 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
             getTopViewController().navigationController?.interactivePopGestureRecognizer?.delegate = self
         }
     }
+    
+    @IBAction func showPopover2(_ sender: UIButton) {
+        let tooltipContentVC = TooltipContentViewController()
+                tooltipContentVC.modalPresentationStyle = .popover
+                
+        // Popover presentation controller oluşturma
+        popoverViewController = tooltipContentVC
+        popoverViewController.popoverPresentationController?.delegate = self
+        popoverViewController.popoverPresentationController?.permittedArrowDirections = .up
+        popoverViewController.popoverPresentationController?.sourceView = self.view
+        //popoverViewController.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+        popoverViewController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: 0, width: 0, height: 0)
+        
+        // Popover'ı göster
+        self.present(popoverViewController, animated: true, completion: nil)
+     }
            
+    
+    
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+           return .none
+    }
+
     
    
     required init?(coder: NSCoder) {
@@ -114,3 +141,17 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
     }
     
 }
+
+class TooltipContentViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Tooltip içeriği
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+        label.text = "Tooltip içeriği"
+        label.textAlignment = .center
+        self.view.addSubview(label)
+        self.preferredContentSize = CGSize(width: 200, height: 200)
+    }
+}
+
