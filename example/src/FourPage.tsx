@@ -1,9 +1,9 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReactNavPage, { useAppBarPress } from 'react-nav-page';
 import { Button } from './components/Button';
 
-const WallPaper = require('./assets/image.png');
+const WallPaper = require('./assets/italy.jpg');
 
 export default function FourPage(props: any) {
   const [stCount, setCount] = useState(0);
@@ -17,13 +17,20 @@ export default function FourPage(props: any) {
   });
 
   const handleScroll = (event: any) => {
-    ReactNavPage.setNavBarAlpha(event.nativeEvent.contentOffset.y / 100);
+    let offset = Math.min(event.nativeEvent.contentOffset.y, 100);
+
+    if (offset > 0) {
+      ReactNavPage.setNavBarAlpha(
+        Math.min(event.nativeEvent.contentOffset.y, 100) / 100
+      );
+    }
   };
 
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: 'black' }}
       onScroll={handleScroll}
+      bounces={false}
       scrollEventThrottle={16}
     >
       <View style={styles.container}>

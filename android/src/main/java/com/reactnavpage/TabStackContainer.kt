@@ -41,7 +41,7 @@ class TabStackContainer(
     ReactNavPageModule.navigationValues.addTabListener(this)
     val layout = inflater.inflate(R.layout.tabbar_layout, container, false);
     bottomNavigationView = layout.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-    val navHostFragment = childFragmentManager.findFragmentById(R.id.tab_nav_container) as NavHostFragment
+    val navHostFragment = childFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
     val navController = navHostFragment.navController
 
     val newTabs = stacks?.getArray("tabs")
@@ -63,15 +63,20 @@ class TabStackContainer(
     for (i in 0 until tabs.size()) {
       val tab= tabs.getMap(i)
       val tabRoute = tab.getString("routeName")
+      val tabTitle = tab.getString("title")
+      val tabInitialProps = tab.getMap("params")
+      val navOptions = tab.getMap("navOptions")
+
+      val screenNavOptions = Arguments.toBundle(navOptions);
+      val screenProps = Arguments.toBundle(tabInitialProps);
+
       val bundle = Bundle()
-      val screenProps = Arguments.toBundle(initialProps);
       bundle.putBundle("params", screenProps);
+      bundle.putBundle("navOptions", screenNavOptions)
+      bundle.putString("title", tabTitle)
+      bundle.putBoolean("backStackDisabled", true)
+
       bottomNavigationView.menu.add(Menu.NONE, i, Menu.NONE, "")
-
-      val argumentBuilder = NavArgumentBuilder();
-      argumentBuilder.defaultValue = bundle
-      val argument = argumentBuilder.build()
-
 
       val navGraph = navController.createGraph(
         startDestination = tabRoute!!,

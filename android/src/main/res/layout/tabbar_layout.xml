@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
@@ -8,18 +8,17 @@
   android:clipToPadding="false"
   android:clipChildren="false"
   android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-  tools:context=".ReactNavPageActivity">
+  android:id="@+id/tab_stack_container">
 
-  <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/tab_nav_container"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:defaultNavHost="true" />
+  <include layout="@layout/stack_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="@+id/bottomNavigationView"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    />
+
 
 
   <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -38,4 +37,4 @@
     tools:ignore="MissingConstraints" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

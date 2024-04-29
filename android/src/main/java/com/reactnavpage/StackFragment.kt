@@ -3,14 +3,15 @@ package com.reactnavpage
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.fragment.findNavController
 import com.facebook.react.ReactRootView
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.Arguments
+import com.google.android.material.appbar.AppBarLayout
 
 class StackFragment: Fragment() {
   private var reactRootView: ReactRootView? = null
@@ -25,7 +26,21 @@ class StackFragment: Fragment() {
     val destination = findNavController().currentBackStackEntry?.destination
     val currentRoute = destination?.route
     val destinationLabel = destination?.label
-    val params = arguments?.getBundle("params")
+    val screenParams = arguments?.getBundle("params")
+
+    val params = screenParams?.getBundle("params")
+    val title = screenParams?.getString("title")
+    var screenNavOptions = screenParams?.getBundle("navOptions")
+
+    if (title != null) {
+      Log.d("screenNavOptions", title)
+    }
+
+    if(screenNavOptions == null){
+      screenNavOptions = Arguments.toBundle(getConfigMap())
+    }
+    Log.d("screenNavOptions", screenNavOptions.toString())
+
     val mergedParams = composeLaunchOptions(params!!)
     val reactInstanceManager = ReactNavPageModule.navigationValues.getReactInstance()
     reactRootView = ReactNavPageModule.navigationValues.getReactRootView(destinationLabel.toString())
@@ -60,7 +75,6 @@ class StackFragment: Fragment() {
 
   override fun onDestroy() {
     super.onDestroy()
-    //reactRootView?.unmountReactApplication()
     val reactRootViews = ReactNavPageModule.navigationValues.getReactRootViews()
     if(!reactRootViews.containsKey(tag)){
       val handler = Handler(Looper.getMainLooper())

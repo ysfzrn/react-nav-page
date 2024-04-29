@@ -1,19 +1,28 @@
 package com.reactnavpage
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import android.widget.FrameLayout
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.NavController.OnDestinationChangedListener
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.facebook.react.bridge.WritableNativeMap
+import com.google.android.material.appbar.AppBarLayout
 
 
 open class ReactNavPageActivity: ReactActivity() {
   private val eventManager = EventManager();
+  private var titleRootView: ReactRootView? = null
+  private var LeftButtonView: ReactRootView? = null
   private var currentStackType: String = "STACK"
   var navigationState: MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
 
@@ -23,18 +32,34 @@ open class ReactNavPageActivity: ReactActivity() {
     setContentView(R.layout.activity_layout)
     ReactNavPageModule.navigationValues.setReactInstance(reactInstanceManager)
 
-    val splashFragment = mainComponentName?.let { StackContainer(it) }
+    val config = WritableNativeMap()
+    config.putDouble("hederNavBarAlpha", 0.0)
+    config.putBoolean("headerShow", false)
+    config.putBoolean("headerTransparent", false)
+    config.putString("headerBackgroundColor", GlobalConfig.headerBackgroundColor)
+
+    val initialProps = WritableNativeMap()
+
+    val splashFragment = mainComponentName?.let { StackContainer(it, "", config, initialProps) }
     if (splashFragment != null) {
       supportFragmentManager.beginTransaction()
         .add(R.id.main_container, splashFragment, mainComponentName).commitNow()
     }
   }
 
-  open fun setRoot(type: String?, routeName: String, stacks: ReadableMap?, tabBar: ReadableMap?, initialProps: ReadableMap?){
+  open fun setRoot(
+    type: String?,
+    routeName: String,
+    stacks: ReadableMap?,
+    tabBar: ReadableMap?,
+    initialProps: ReadableMap?,
+    title: String?,
+    navOptions: ReadableMap?
+  ){
     postponeEnterTransition()
     if(type == "STACK"){
       ReactNavPageModule.navigationValues.clearReactRootViews()
-      val stackFragment = StackContainer(routeName)
+      val stackFragment = StackContainer(routeName, title, navOptions, initialProps)
       loadFragment(stackFragment, "STACK")
       currentStackType = "STACK"
       navigationStateUpdate(this, "root")
@@ -51,7 +76,7 @@ open class ReactNavPageActivity: ReactActivity() {
 
   private fun loadFragment(stackFragment: Fragment, tag:String){
     supportFragmentManager.beginTransaction()
-      .setReorderingAllowed(true)
+      //.setReorderingAllowed(true)
       .setCustomAnimations(
         androidx.navigation.ui.R.anim.nav_default_enter_anim,
         androidx.navigation.ui.R.anim.nav_default_exit_anim,
@@ -103,9 +128,15 @@ open class ReactNavPageActivity: ReactActivity() {
     return true
   }
 
+
   private val routeChangeListener =
     OnDestinationChangedListener { controller, destination, arguments ->
       val route = destination.route.toString()
+      val destinationLabel = destination.label
+      if (arguments != null) {
+        setAppBar(arguments, route)
+      }
+
       val reactContext = ReactNavPageModule.navigationValues.getReactInstance().currentReactContext
 
       val params = Arguments.createMap().apply {
@@ -117,4 +148,65 @@ open class ReactNavPageActivity: ReactActivity() {
         eventManager.sendEvent(reactContext as ReactApplicationContext?, "onRouteChange", params)
       }, 100)
     }
+
+  private fun setAppBar(arguments: Bundle, route: String) {
+    val reactInstanceManager = ReactNavPageModule.navigationValues.getReactInstance()
+    val appBarContainer = findViewById<RelativeLayout>(R.id.appBarContainer)
+    appBarContainer.removeAllViews()
+    if(LeftButtonView != null){
+      LeftButtonView!!.unmountReactApplication()
+    }
+    if(LeftButtonView != null){
+      LeftButtonView!!.unmountReactApplication()
+    }
+    val screenParams = arguments.getBundle("params")
+    val params = screenParams?.getBundle("params")
+    val title = screenParams?.getString("title")
+    val screenNavOptions = screenParams?.getBundle("navOptions")
+    //val headerShow = screenNavOptions?.getBoolean("headerShow", GlobalConfig.headerShow)
+    val headerShow = screenNavOptions?.getBoolean("headerShow", GlobalConfig.headerShow) ?: GlobalConfig.headerShow
+    Log.d("headerShow", "$headerShow-${GlobalConfig.headerShow}")
+    if(!headerShow){
+      return
+    }
+
+    val backStackDisabled = screenParams?.getBoolean("backStackDisabled", false) ?: false
+    val headerBackgroundColor = screenNavOptions?.getString("headerBackgroundColor", GlobalConfig.headerBackgroundColor) ?: GlobalConfig.headerBackgroundColor
+    appBarContainer.setBackgroundColor(getColorWithAlpha(Color.parseColor(headerBackgroundColor),
+      1.0F
+    ))
+    val headerTransparent = screenNavOptions?.getBoolean("headerTransparent", GlobalConfig.headerTransparent) ?: GlobalConfig.headerTransparent
+    if(headerTransparent){
+      appBarContainer.setBackgroundColor(getColorWithAlpha(Color.parseColor(headerBackgroundColor),
+        0.0F
+      ))
+    }
+
+
+    if(!backStackDisabled){
+      val initialProps = Bundle()
+      initialProps.putString("title", title)
+      initialProps.putString("routeName", route)
+      val layoutParams =
+        FrameLayout.LayoutParams(dpToPx(50.0), dpToPx(44.0))
+
+      LeftButtonView = ReactRootView(this)
+      LeftButtonView!!.setIsFabric(true)
+      LeftButtonView!!.layoutParams = layoutParams
+      LeftButtonView!!.startReactApplication(reactInstanceManager, "LeftButtonView", initialProps)
+
+      appBarContainer?.addView(LeftButtonView, 0)
+    }
+
+    val initialProps = Bundle()
+    initialProps.putString("title", title)
+    val layoutParams =
+      FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dpToPx(44.0))
+
+    titleRootView = ReactRootView(this)
+    titleRootView!!.setIsFabric(true)
+    titleRootView!!.layoutParams = layoutParams
+    titleRootView!!.startReactApplication(reactInstanceManager, "TitleView", initialProps)
+    appBarContainer?.addView(titleRootView)
+  }
 }

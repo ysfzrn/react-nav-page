@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export const TitleView = (props: any) => {
   return (
@@ -11,12 +11,12 @@ export const TitleView = (props: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 44,
+    width: 200,
+    alignSelf: 'center',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    borderWidth: 2,
-    borderRadius: 20,
     borderColor: '#FFF',
   },
   text: {

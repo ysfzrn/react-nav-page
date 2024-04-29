@@ -1,7 +1,9 @@
 package com.reactnavpage
 
 import android.content.res.Resources
+import android.graphics.Color
 import kotlin.math.roundToInt
+
 
 fun dpToPx(dp: Double): Int {
   return (dp.roundToInt() * Resources.getSystem().displayMetrics.density).roundToInt()
@@ -60,4 +62,14 @@ fun findRouteKeyForPage(pageName: String, navigationState: MutableMap<String, Mu
     }
   }
   return null
+}
+
+fun getColorWithAlpha(color: Int, ratio: Float): Int {
+  var newColor = 0
+  val alpha = Math.round(Color.alpha(color) * ratio)
+  val r = Color.red(color)
+  val g = Color.green(color)
+  val b = Color.blue(color)
+  newColor = Color.argb(alpha, r, g, b)
+  return newColor
 }

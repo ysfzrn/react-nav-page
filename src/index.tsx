@@ -177,8 +177,27 @@ export const useAppBarPress = (callback: Function) => {
     const subscription = moduleEventEmitter.addListener(
       'onAppBarPress',
       (event: any) => {
+        console.log('event useAppBarPress', event);
         if (rootTag === event.rootTag) {
           console.log(event);
+          callback(event);
+        }
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
+export const useAppBarRouteChange = (callback: Function) => {
+  useEffect(() => {
+    const subscription = moduleEventEmitter.addListener(
+      'onRouteChange',
+      (event: any) => {
+        if (Platform.OS === 'android') {
           callback(event);
         }
       }
