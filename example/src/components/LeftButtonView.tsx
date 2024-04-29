@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import React from 'react';
 
 const BackIcon = require('../assets/back.png');
@@ -13,7 +13,7 @@ export const LeftButtonView = () => {
 const styles = StyleSheet.create({
   container: {
     width: 50,
-    height: 44,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },

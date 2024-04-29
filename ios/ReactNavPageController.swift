@@ -15,7 +15,7 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
     var initialProps: NSDictionary
     var pageTitle: String = ""
     var navOptions: NSDictionary?
-    
+        
     
     init(routeName: String, bridge: RCTBridge, initialProps:NSDictionary, pageTitle: String, navOptions: NSDictionary?) {
         self.routeName = routeName
@@ -56,51 +56,48 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
     func setNavigationBar(){
             let headerBackgroundColor = self.navOptions?["headerBackgroundColor"] as? String ?? GlobalConfig.headerBackgroundColor
             let hederNavBarAlpha = self.navOptions?["hederNavBarAlpha"] as? Float ?? GlobalConfig.hederNavBarAlpha
-            
+            let bounds = self.navigationController!.navigationBar.bounds
             
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = hexStringToUIColor(hexColor: headerBackgroundColor, alpha: CGFloat(hederNavBarAlpha))
+            appearance.shadowColor = .clear
             self.navigationItem.standardAppearance = appearance
             self.navigationItem.scrollEdgeAppearance = appearance
             self.navigationItem.compactAppearance = appearance
             
-            self.setTitleView()
-            self.setLeftBarButton()
+            self.setTitleView(headerHeight: bounds.height)
+            self.setLeftBarButton(headerHeight: bounds.height)
     }
     
-    func setTitleView(){
+    func setTitleView(headerHeight: CGFloat){
             let initialProps: [String: Any] = [
                 "title": self.pageTitle
             ]
-            
             let titleRootView = RootViewUtil.createRootView(self.bridge, moduleName: "TitleView", initProps: initialProps)
             
-            let customTitleView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+            let customTitleView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: headerHeight))
             customTitleView.backgroundColor = .clear
             titleRootView!.backgroundColor = .clear
-            titleRootView!.frame = CGRect(x: 0, y: 0, width: 200, height: 44)
+            titleRootView!.frame = CGRect(x: 0, y: 0, width: 200, height: headerHeight)
             customTitleView.addSubview(titleRootView!)
             self.navigationItem.titleView = customTitleView
-        
     }
     
-    func setLeftBarButton(){
+    func setLeftBarButton(headerHeight: CGFloat){
         let initialProps: [String: Any] = [
             "title": pageTitle
         ]
         let viewControllersCount = getTopViewController().navigationController?.viewControllers.count ?? 0
         if (viewControllersCount > 1) {
-            let backNavView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 44))
+            let backNavView = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: headerHeight))
             let backRootView = RootViewUtil.createRootView(bridge, moduleName: "LeftButtonView", initProps: initialProps)
             
             backNavView.backgroundColor = .clear
             backRootView?.backgroundColor = .clear
-            backRootView?.frame = CGRect(x: 0, y: 0, width: 50, height: 44)
+            backRootView?.frame = backNavView.frame
             backNavView.addSubview(backRootView!)
-            
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(leftButtonAction))
-            backNavView.addGestureRecognizer(tapGesture)
+
             
             let backNav = UIBarButtonItem(
                 customView: backNavView
@@ -109,10 +106,7 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
             getTopViewController().navigationController?.interactivePopGestureRecognizer?.delegate = self
         }
     }
-    
-    @objc private func leftButtonAction() {
-        ReactNavPageImpl.sharedInstance.sendAppBarPressEvent(name: "onAppBarPress", payload: ["button": "left", "routeName":routeName, "rootTag": rootTag])
-    }
+           
     
    
     required init?(coder: NSCoder) {

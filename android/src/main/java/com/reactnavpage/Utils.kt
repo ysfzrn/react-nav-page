@@ -10,6 +10,11 @@ fun dpToPx(dp: Double): Int {
     .toInt()
 }
 
+fun pxToDp(px: Int): Float {
+  val displayMetrics = Resources.getSystem().displayMetrics
+  return px / displayMetrics.density
+}
+
 fun navigationStateUpdate(activity: ReactNavPageActivity, eventType: String){
   val currentTab = ReactNavPageModule.navigationValues.getSelectedTab()
   val navController = ReactNavPageModule.navigationValues.getCurrentNavController()

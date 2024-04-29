@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import ReactNavPage, { useAppBarPress, useRouteChange } from 'react-nav-page';
 import { Button } from './components/Button';
 
@@ -45,7 +37,7 @@ export default function FirstPage() {
                 count,
               },
               navOptions: {
-                headerShow: false,
+                headerShow: true,
               },
             });
           }}
@@ -77,9 +69,6 @@ export default function FirstPage() {
                   routeName: 'FivePage',
                   title: 'Five Page',
                   params: {},
-                  navOptions: {
-                    headerShow: false,
-                  },
                 },
                 {
                   routeName: 'ThirdPage',

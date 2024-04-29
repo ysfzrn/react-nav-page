@@ -22,7 +22,7 @@ import com.google.android.material.appbar.AppBarLayout
 open class ReactNavPageActivity: ReactActivity() {
   private val eventManager = EventManager();
   private var titleRootView: ReactRootView? = null
-  private var LeftButtonView: ReactRootView? = null
+  private var leftButtonView: ReactRootView? = null
   private var currentStackType: String = "STACK"
   var navigationState: MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
 
@@ -153,17 +153,17 @@ open class ReactNavPageActivity: ReactActivity() {
     val reactInstanceManager = ReactNavPageModule.navigationValues.getReactInstance()
     val appBarContainer = findViewById<RelativeLayout>(R.id.appBarContainer)
     appBarContainer.removeAllViews()
-    if(LeftButtonView != null){
-      LeftButtonView!!.unmountReactApplication()
+    if(leftButtonView != null){
+      leftButtonView!!.unmountReactApplication()
     }
-    if(LeftButtonView != null){
-      LeftButtonView!!.unmountReactApplication()
+    if(titleRootView != null){
+      titleRootView!!.unmountReactApplication()
     }
     val screenParams = arguments.getBundle("params")
     val params = screenParams?.getBundle("params")
     val title = screenParams?.getString("title")
     val screenNavOptions = screenParams?.getBundle("navOptions")
-    //val headerShow = screenNavOptions?.getBoolean("headerShow", GlobalConfig.headerShow)
+    val headerHeight = GlobalConfig.headerHeight
     val headerShow = screenNavOptions?.getBoolean("headerShow", GlobalConfig.headerShow) ?: GlobalConfig.headerShow
     Log.d("headerShow", "$headerShow-${GlobalConfig.headerShow}")
     if(!headerShow){
@@ -188,20 +188,20 @@ open class ReactNavPageActivity: ReactActivity() {
       initialProps.putString("title", title)
       initialProps.putString("routeName", route)
       val layoutParams =
-        FrameLayout.LayoutParams(dpToPx(50.0), dpToPx(44.0))
+        FrameLayout.LayoutParams(dpToPx(50.0), dpToPx(headerHeight))
 
-      LeftButtonView = ReactRootView(this)
-      LeftButtonView!!.setIsFabric(true)
-      LeftButtonView!!.layoutParams = layoutParams
-      LeftButtonView!!.startReactApplication(reactInstanceManager, "LeftButtonView", initialProps)
+      leftButtonView = ReactRootView(this)
+      leftButtonView!!.setIsFabric(true)
+      leftButtonView!!.layoutParams = layoutParams
+      leftButtonView!!.startReactApplication(reactInstanceManager, "LeftButtonView", initialProps)
 
-      appBarContainer?.addView(LeftButtonView, 0)
+      appBarContainer?.addView(leftButtonView, 0)
     }
 
     val initialProps = Bundle()
     initialProps.putString("title", title)
     val layoutParams =
-      FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dpToPx(44.0))
+      FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dpToPx(headerHeight))
 
     titleRootView = ReactRootView(this)
     titleRootView!!.setIsFabric(true)
