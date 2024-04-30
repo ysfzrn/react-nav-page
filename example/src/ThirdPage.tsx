@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import ReactNavPage from 'react-nav-page';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import ReactNavPage, { SharedElementView } from 'react-nav-page';
 import { Button } from './components/Button';
+
+const WallPaper = require('./assets/italy2.jpg');
 
 export default function ThirdPage() {
   const [count, setCount] = useState(0);
@@ -32,6 +34,7 @@ export default function ThirdPage() {
             });
           }}
         />
+
         <Button
           label="POP"
           onPress={() => {
@@ -45,6 +48,9 @@ export default function ThirdPage() {
           }}
         />
         <Text style={styles.count}>{count}</Text>
+        <SharedElementView style={styles.box} sharedID="four">
+          <Image source={WallPaper} style={styles.image} />
+        </SharedElementView>
       </View>
     </ScrollView>
   );
@@ -62,5 +68,18 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  box: {
+    position: 'absolute',
+    top: 0,
+    width: 100,
+    height: 100,
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });

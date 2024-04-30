@@ -6,6 +6,7 @@
 //
 import Foundation
 import React
+import Hero
 
 @objc(ReactNavPageImplDelegate)
 public protocol ReactNavPageImplDelegate {
@@ -44,7 +45,9 @@ public class ReactNavPageImpl : NSObject {
                let rootViewController = getTopViewController();
                //let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params)
                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params, pageTitle: title as String, navOptions: navOptions)
-               rootViewController.navigationController?.pushViewController(rootVC, animated: true)
+               
+               //rootViewController.navigationController?.hero.isEnabled = true
+               rootViewController.navigationController!.pushViewController(rootVC, animated: true)
            }
     }
     

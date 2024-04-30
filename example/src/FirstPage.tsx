@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import ReactNavPage, { useAppBarPress, useRouteChange } from 'react-nav-page';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import ReactNavPage, {
+  useAppBarPress,
+  useRouteChange,
+  SharedElementView,
+} from 'react-nav-page';
 import { Button } from './components/Button';
+
+const WallPaper = require('./assets/italy2.jpg');
 
 export default function FirstPage() {
   const [count, setCount] = useState(0);
@@ -26,6 +39,9 @@ export default function FirstPage() {
   return (
     <ScrollView style={styles.scroll}>
       <View style={styles.container}>
+        <SharedElementView style={styles.box} sharedID="myImage">
+          <Image source={WallPaper} style={styles.image} />
+        </SharedElementView>
         <Button
           label="Go To Page"
           onPress={() => {
@@ -48,12 +64,14 @@ export default function FirstPage() {
             setCount(count + 1);
           }}
         />
+
         <Button
           label="POP"
           onPress={() => {
             ReactNavPage.pop();
           }}
         />
+
         <Button
           label="Show Tab Bar"
           onPress={() => {
@@ -88,7 +106,9 @@ export default function FirstPage() {
           }}
         />
 
-        <Text style={styles.count}>{count}</Text>
+        <SharedElementView sharedID="myPop">
+          <Text style={styles.count}>{count}</Text>
+        </SharedElementView>
         <TextInput style={styles.input} />
       </View>
     </ScrollView>
@@ -106,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     height: 1000,
   },
   count: {
@@ -123,5 +142,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 5,
     paddingVertical: 10,
+  },
+  box: {
+    width: 100,
+    height: 100,
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });

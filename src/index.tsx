@@ -14,6 +14,9 @@ import type {
   rootTypes,
 } from './types';
 
+export { default as SharedElementView } from './SharedElementViewNativeComponent';
+export * from './SharedElementViewNativeComponent';
+
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
 const moduleEventEmitter = new NativeEventEmitter(

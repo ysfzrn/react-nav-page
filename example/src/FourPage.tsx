@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ReactNavPage, { useAppBarPress } from 'react-nav-page';
+import ReactNavPage, {
+  SharedElementView,
+  useAppBarPress,
+} from 'react-nav-page';
 import { Button } from './components/Button';
 
-const WallPaper = require('./assets/italy.jpg');
+const WallPaper = require('./assets/italy2.jpg');
 
 export default function FourPage(props: any) {
   const [stCount, setCount] = useState(0);
@@ -34,7 +37,9 @@ export default function FourPage(props: any) {
       scrollEventThrottle={16}
     >
       <View style={styles.container}>
-        <Image source={WallPaper} style={styles.image} />
+        <SharedElementView sharedID="four" style={styles.image}>
+          <Image source={WallPaper} style={styles.image} />
+        </SharedElementView>
         <Button
           label="POP"
           onPress={() => {

@@ -159,7 +159,7 @@
   },
   "codegenConfig": {
     "name": "RNReactNavPageSpec",
-    "type": "modules",
+    "type": "all",
     "jsSrcsDir": "src"
   }
 }

@@ -51,12 +51,13 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
         }
         let headerTransparent = self.navOptions?["headerTransparent"] as? Bool ?? GlobalConfig.headerTransparent
         self.navigationController?.navigationBar.isTranslucent = headerTransparent
+        self.view.hero.modifiers = [.useGlobalCoordinateSpace]
     }
     
     func setNavigationBar(){
             let headerBackgroundColor = self.navOptions?["headerBackgroundColor"] as? String ?? GlobalConfig.headerBackgroundColor
             let hederNavBarAlpha = self.navOptions?["hederNavBarAlpha"] as? Float ?? GlobalConfig.hederNavBarAlpha
-            let bounds = self.navigationController!.navigationBar.bounds
+            let bounds = self.navigationController?.navigationBar.bounds
             
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
@@ -66,8 +67,8 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
             self.navigationItem.scrollEdgeAppearance = appearance
             self.navigationItem.compactAppearance = appearance
             
-            self.setTitleView(headerHeight: bounds.height)
-            self.setLeftBarButton(headerHeight: bounds.height)
+            self.setTitleView(headerHeight: bounds?.height ?? 44)
+            self.setLeftBarButton(headerHeight: bounds?.height ?? 44)
     }
     
     func setTitleView(headerHeight: CGFloat){

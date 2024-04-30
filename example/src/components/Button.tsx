@@ -8,7 +8,7 @@ import React from 'react';
 
 type Props = TouchableOpacityProps & {
   label: string;
-  onPress: Function;
+  onPress?: Function;
 };
 
 export const Button = ({ label = 'label', ...rest }: Props) => {

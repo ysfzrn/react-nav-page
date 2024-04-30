@@ -42,5 +42,25 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 #endif
 }
 
++ (UIView *)findSharedViewInView:(UIView *)view {
+    // Eğer verilen view bir ReactNavPageHeaderView ise doğrudan geri dön
+    NSLog(@"aaa-%@", view);
+
+    if ([view isKindOfClass:NSClassFromString(@"SharedElementView")]) {
+        return view;
+    }
+    
+    // Eğer view'in altında başka bir view varsa, onları da tarayarak ReactNavPageHeaderView bulmaya çalış
+    for (UIView *subview in view.subviews) {
+        UIView *foundView = [self findSharedViewInView:subview];
+        if (foundView) {
+            return foundView;
+        }
+    }
+    
+    // Eğer hiçbir alt view'de ReactNavPageHeaderView bulunamadıysa nil döndür
+    return nil;
+}
+
 @end
 

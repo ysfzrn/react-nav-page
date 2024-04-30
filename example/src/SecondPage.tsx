@@ -1,8 +1,17 @@
 import * as React from 'react';
 
-import { Alert, BackHandler, StyleSheet, Text, View } from 'react-native';
-import ReactNavPage from 'react-nav-page';
+import {
+  Alert,
+  BackHandler,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import ReactNavPage, { SharedElementView } from 'react-nav-page';
 import { Button } from './components/Button';
+
+const WallPaper = require('./assets/italy2.jpg');
 
 export default function SecondPage(props: any) {
   const { params: { count = 0 } = {} } = props || {};
@@ -29,6 +38,9 @@ export default function SecondPage(props: any) {
 
   return (
     <View style={styles.container}>
+      <SharedElementView style={styles.box} sharedID="myImage">
+        <Image source={WallPaper} style={styles.image} />
+      </SharedElementView>
       <Button
         label="Go To Second Page"
         onPress={() => {
@@ -62,7 +74,9 @@ export default function SecondPage(props: any) {
           });
         }}
       />
-      <Text style={styles.count}>{count}</Text>
+      <SharedElementView sharedID="myPop">
+        <Text style={styles.count}>{count}</Text>
+      </SharedElementView>
     </View>
   );
 }
@@ -71,17 +85,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#ff9800',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
   },
   count: {
     fontSize: 32,
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  box: {
+    width: '100%',
+    height: 400,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });

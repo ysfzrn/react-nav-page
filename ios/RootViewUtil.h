@@ -2,6 +2,7 @@
 
 + (UINavigationController *)wrapperNavigationController:(UIViewController *)viewController storyboardName:(NSString *)storyboardName;
 + (UIView *)createRootView:(RCTBridge *)bridge moduleName:(NSString *)moduleName initProps:(NSDictionary *)initProps;
++ (UIView *)findSharedViewInView:(UIView *)view;
 
 @end
 
