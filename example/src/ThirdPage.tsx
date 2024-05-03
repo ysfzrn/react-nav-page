@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ReactNavPage, { SharedElementView } from 'react-nav-page';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import ReactNavPage, { SharedElementImage } from 'react-nav-page';
 import { Button } from './components/Button';
 
 const WallPaper = require('./assets/italy2.jpg');
@@ -15,12 +15,19 @@ export default function ThirdPage() {
   }, []);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: 'black' }}>
+    <ScrollView style={{ flex: 1, backgroundColor: '#43a047' }}>
       <View style={styles.container}>
+        <View style={styles.box}>
+          <SharedElementImage
+            sharedID="wallpaper"
+            source={WallPaper}
+            style={styles.image}
+          />
+        </View>
         <Button
           label="Go To Four"
           onPress={() => {
-            ReactNavPage.pushWithRegister({
+            ReactNavPage.pushWithTransition({
               routeName: 'FourPage',
               title: 'Four Page',
               component: require('./FourPage').default,
@@ -30,6 +37,7 @@ export default function ThirdPage() {
               navOptions: {
                 headerTransparent: true,
                 hederNavBarAlpha: 0,
+                sharedElements: ['wallpaper'],
               },
             });
           }}
@@ -48,9 +56,6 @@ export default function ThirdPage() {
           }}
         />
         <Text style={styles.count}>{count}</Text>
-        <SharedElementView style={styles.box} sharedID="four">
-          <Image source={WallPaper} style={styles.image} />
-        </SharedElementView>
       </View>
     </ScrollView>
   );
@@ -61,8 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#43a047',
-    height: 900,
+    paddingTop: 56,
   },
   count: {
     fontSize: 32,
@@ -70,7 +74,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   box: {
-    position: 'absolute',
     top: 0,
     width: 100,
     height: 100,

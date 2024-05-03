@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import ReactNavPage, {
   useAppBarPress,
   useRouteChange,
   SharedElementView,
+  SharedElementImage,
 } from 'react-nav-page';
 import { Button } from './components/Button';
 
@@ -39,13 +33,15 @@ export default function FirstPage() {
   return (
     <ScrollView style={styles.scroll}>
       <View style={styles.container}>
-        <SharedElementView style={styles.box} sharedID="myImage">
-          <Image source={WallPaper} style={styles.image} />
-        </SharedElementView>
+        <SharedElementImage
+          sharedID="wallpaper"
+          source={WallPaper}
+          style={styles.image}
+        />
         <Button
           label="Go To Page"
           onPress={() => {
-            ReactNavPage.pushWithRegister({
+            ReactNavPage.pushWithTransition({
               routeName: 'SecondPage',
               title: 'Second Page',
               component: require('./SecondPage').default,
@@ -54,6 +50,7 @@ export default function FirstPage() {
               },
               navOptions: {
                 headerShow: true,
+                sharedElements: ['wallpaper', 'circle', 'myPop'],
               },
             });
           }}
@@ -110,6 +107,7 @@ export default function FirstPage() {
           <Text style={styles.count}>{count}</Text>
         </SharedElementView>
         <TextInput style={styles.input} />
+        <SharedElementView sharedID="circle" style={styles.circle} />
       </View>
     </ScrollView>
   );
@@ -122,6 +120,7 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
     backgroundColor: '#E91E63',
+    paddingTop: 56,
   },
   container: {
     flex: 1,
@@ -144,14 +143,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   box: {
-    width: 100,
-    height: 100,
-    marginVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 150,
+    height: 150,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: 150,
+    height: 150,
+  },
+  circle: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#f9a825',
   },
 });

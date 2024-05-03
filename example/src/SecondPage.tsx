@@ -3,17 +3,24 @@ import * as React from 'react';
 import {
   Alert,
   BackHandler,
-  Image,
   StyleSheet,
   Text,
   View,
+  Dimensions,
+  Platform,
 } from 'react-native';
-import ReactNavPage, { SharedElementView } from 'react-nav-page';
+import ReactNavPage, {
+  SharedElementView,
+  SharedElementImage,
+} from 'react-nav-page';
 import { Button } from './components/Button';
+
+const screenWidth = Dimensions.get('screen').width;
 
 const WallPaper = require('./assets/italy2.jpg');
 
 export default function SecondPage(props: any) {
+  console.log('props', props);
   const { params: { count = 0 } = {} } = props || {};
 
   React.useEffect(() => {
@@ -38,15 +45,17 @@ export default function SecondPage(props: any) {
 
   return (
     <View style={styles.container}>
-      <SharedElementView style={styles.box} sharedID="myImage">
-        <Image source={WallPaper} style={styles.image} />
-      </SharedElementView>
+      <SharedElementImage
+        sharedID="wallpaper"
+        source={WallPaper}
+        style={styles.image}
+      />
       <Button
         label="Go To Second Page"
         onPress={() => {
           ReactNavPage.pushWithRegister({
-            routeName: 'FirstPage',
-            title: 'First Page',
+            routeName: 'FirstPage2',
+            title: 'First Page 2',
             component: require('./FirstPage').default,
             params: {
               count,
@@ -77,6 +86,7 @@ export default function SecondPage(props: any) {
       <SharedElementView sharedID="myPop">
         <Text style={styles.count}>{count}</Text>
       </SharedElementView>
+      <SharedElementView sharedID="circle" style={styles.circle} />
     </View>
   );
 }
@@ -86,6 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#ff9800',
+    paddingTop: Platform.OS === 'android' ? 56 : 0,
   },
   count: {
     fontSize: 32,
@@ -93,11 +104,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   box: {
-    width: '100%',
-    height: 400,
+    width: screenWidth,
+    height: 200,
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 400,
+  },
+  circle: {
+    width: screenWidth,
+    height: 200,
+    backgroundColor: '#2196F3',
+    borderRadius: 100,
   },
 });

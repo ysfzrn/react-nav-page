@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ReactNavPage, {
-  SharedElementView,
+  SharedElementImage,
   useAppBarPress,
 } from 'react-nav-page';
 import { Button } from './components/Button';
@@ -37,9 +37,11 @@ export default function FourPage(props: any) {
       scrollEventThrottle={16}
     >
       <View style={styles.container}>
-        <SharedElementView sharedID="four" style={styles.image}>
-          <Image source={WallPaper} style={styles.image} />
-        </SharedElementView>
+        <SharedElementImage
+          sharedID="wallpaper"
+          source={WallPaper}
+          style={styles.image}
+        />
         <Button
           label="POP"
           onPress={() => {

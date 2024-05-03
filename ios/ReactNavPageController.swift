@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Hero
 
 @objc(ReactNavPageController)
 public class ReactNavPageController: UIViewController, UIGestureRecognizerDelegate{
@@ -15,14 +16,16 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
     var initialProps: NSDictionary
     var pageTitle: String = ""
     var navOptions: NSDictionary?
+    var heroEnabled: Bool = false
         
     
-    init(routeName: String, bridge: RCTBridge, initialProps:NSDictionary, pageTitle: String, navOptions: NSDictionary?) {
+    init(routeName: String, bridge: RCTBridge, initialProps:NSDictionary, pageTitle: String, navOptions: NSDictionary?, heroEnabled: Bool?) {
         self.routeName = routeName
         self.bridge = bridge
         self.initialProps = initialProps
         self.pageTitle = pageTitle
         self.navOptions = navOptions
+        self.heroEnabled = heroEnabled ?? false
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,6 +46,7 @@ public class ReactNavPageController: UIViewController, UIGestureRecognizerDelega
     }
     
     public override func viewWillAppear(_ animated: Bool) {
+        getTopViewController().navigationController?.hero.isEnabled = self.heroEnabled
         let headerShow = self.navOptions?["headerShow"] as? Bool ?? GlobalConfig.headerShow
         if(headerShow == false){
             self.navigationController?.setNavigationBarHidden(true, animated: true)

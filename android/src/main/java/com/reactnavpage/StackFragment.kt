@@ -1,8 +1,10 @@
 package com.reactnavpage
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.transition.TransitionInflater
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +13,30 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
-import com.google.android.material.appbar.AppBarLayout
 
 class StackFragment: Fragment() {
   private var reactRootView: ReactRootView? = null
   private var tag: String = ""
+
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    val screenParams = arguments?.getBundle("params")
+    val sharedID = screenParams?.getString("sharedID")
+    if(sharedID != null){
+      activity?.postponeEnterTransition()
+      postponeEnterTransition()
+    }
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val screenParams = arguments?.getBundle("params")
+    val sharedID = screenParams?.getString("sharedID")
+    if(sharedID != null){
+      sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(R.transition.shared_transition)
+    }
+  }
+
 
 
   override fun onCreateView(
@@ -69,7 +90,9 @@ class StackFragment: Fragment() {
     val handler = Handler(Looper.getMainLooper())
     handler.postDelayed({
       activity?.startPostponedEnterTransition()
-    }, 300)
+      startPostponedEnterTransition()
+    }, 100)
+
   }
 
 

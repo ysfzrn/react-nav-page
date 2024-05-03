@@ -43,13 +43,24 @@ public class ReactNavPageImpl : NSObject {
     @objc public func push(routeName: NSString, title:NSString, params: NSDictionary, navOptions: NSDictionary) -> Void {
            DispatchQueue.main.async {
                let rootViewController = getTopViewController();
-               //let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params)
-               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params, pageTitle: title as String, navOptions: navOptions)
+               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params, pageTitle: title as String, navOptions: navOptions, heroEnabled: false)
                
-               //rootViewController.navigationController?.hero.isEnabled = true
+               rootViewController.navigationController?.hero.isEnabled = false
                rootViewController.navigationController!.pushViewController(rootVC, animated: true)
            }
     }
+    
+    
+    @objc public func pushWithTransition(routeName: NSString, title:NSString, params: NSDictionary, navOptions: NSDictionary) -> Void {
+           DispatchQueue.main.async {
+               let rootViewController = getTopViewController();
+               let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: params, pageTitle: title as String, navOptions: navOptions, heroEnabled: true)
+               
+               rootViewController.navigationController?.hero.isEnabled = true
+               rootViewController.navigationController!.pushViewController(rootVC, animated: true)
+           }
+    }
+    
     
     @objc public func pop() -> Void {
         DispatchQueue.main.async {
@@ -99,7 +110,7 @@ public class ReactNavPageImpl : NSObject {
             transition.subtype = CATransitionSubtype.fromRight
             
             if(type == "STACK"){
-                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, pageTitle: title as String, navOptions: navOptions)
+                let rootVC = ReactNavPageController(routeName: routeName as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, pageTitle: title as String, navOptions: navOptions, heroEnabled: false)
                 // Change rootViewController
                 let navCtrller = RootViewUtil.wrapperNavigationController(rootVC, storyboardName: "LaunchScreen")
                 UIApplication.shared.keyWindow?.layer.add(transition, forKey: kCATransition)
@@ -122,7 +133,7 @@ public class ReactNavPageImpl : NSObject {
                     let tabTitle = tabStack?["title"] as? String
                     let tabNavOptions = tabStack?["navOptions"] as? NSDictionary
                     
-                    let rootVC = ReactNavPageController(routeName: tabName! as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, pageTitle: tabTitle! as String, navOptions: tabNavOptions)
+                    let rootVC = ReactNavPageController(routeName: tabName! as String, bridge: ReactNavPageImpl.sharedInstance.bridge!, initialProps: initialProps as NSDictionary, pageTitle: tabTitle! as String, navOptions: tabNavOptions,heroEnabled: false)
                     let nv =  UINavigationController(rootViewController: rootVC)
                     navControllers.append(nv)
                     

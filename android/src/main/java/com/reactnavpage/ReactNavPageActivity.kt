@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Window
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
@@ -56,7 +57,6 @@ open class ReactNavPageActivity: ReactActivity() {
     title: String?,
     navOptions: ReadableMap?
   ){
-    postponeEnterTransition()
     if(type == "STACK"){
       ReactNavPageModule.navigationValues.clearReactRootViews()
       val stackFragment = StackContainer(routeName, title, navOptions, initialProps)
@@ -163,7 +163,7 @@ open class ReactNavPageActivity: ReactActivity() {
     val params = screenParams?.getBundle("params")
     val title = screenParams?.getString("title")
     val screenNavOptions = screenParams?.getBundle("navOptions")
-    val headerHeight = GlobalConfig.headerHeight
+    val headerHeight = 56.0
     val headerShow = screenNavOptions?.getBoolean("headerShow", GlobalConfig.headerShow) ?: GlobalConfig.headerShow
     Log.d("headerShow", "$headerShow-${GlobalConfig.headerShow}")
     if(!headerShow){

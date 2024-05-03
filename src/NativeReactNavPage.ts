@@ -23,6 +23,12 @@ export interface Spec extends TurboModule {
     navOptions: UnsafeObject,
     params?: UnsafeObject
   ): void;
+  pushWithTransition(
+    routeName: string,
+    title: string,
+    navOptions: UnsafeObject,
+    params?: UnsafeObject
+  ): void;
   pop(): void;
   addListener(eventName: string): void;
   removeListeners(count: number): void;

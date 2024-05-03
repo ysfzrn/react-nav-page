@@ -14,8 +14,8 @@ import type {
   rootTypes,
 } from './types';
 
-export { default as SharedElementView } from './SharedElementViewNativeComponent';
-export * from './SharedElementViewNativeComponent';
+export * from './SharedElementView';
+export * from './SharedElementImage';
 
 const ReactNavPageModule = require('./NativeReactNavPage').default;
 
@@ -43,6 +43,21 @@ class ReactNavPage {
       initialProps: { params },
     });
     ReactNavPageModule.push(routeName, title, navOptions, params);
+  };
+
+  pushWithTransition = ({
+    routeName,
+    params,
+    component,
+    title,
+    navOptions,
+  }: pushWithRegisterTypes) => {
+    this.registerComponent({
+      route: routeName,
+      Component: component,
+      initialProps: { params },
+    });
+    ReactNavPageModule.pushWithTransition(routeName, title, navOptions, params);
   };
 
   registerComponent({

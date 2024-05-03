@@ -152,7 +152,6 @@ class TabStackContainer(
 
     if (tabRoute != null) {
       try {
-        activity?.postponeEnterTransition()
         currentNavController.navigate(tabRoute, options)
       } catch (e: IllegalArgumentException) {
         val name = NavDestination.getDisplayName(currentNavController.context, destinationId)

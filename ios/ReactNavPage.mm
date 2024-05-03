@@ -50,6 +50,11 @@ RCT_EXPORT_MODULE(ReactNavPage)
     [ReactNavPageImpl.sharedInstance pushWithRouteName:routeName title:title params:params navOptions:navOptions];
 }
 
+
+- (void)pushWithTransition:(NSString *)routeName title:(NSString *)title navOptions:(NSDictionary *)navOptions params:(NSDictionary *)params {
+    [ReactNavPageImpl.sharedInstance pushWithTransitionWithRouteName:routeName title:title params:params navOptions:navOptions];
+}
+
 - (void)setRoot:(NSString *)type routeName:(NSString *)routeName title:(NSString *)title initialProps:(NSDictionary *)initialProps navOptions:(NSDictionary *)navOptions tabBar:(NSDictionary *)tabBar stacks:(NSDictionary *)stacks { 
     NSArray *valArray = [NSArray arrayWithObjects: stacks, nil];
     [ReactNavPageImpl.sharedInstance setRootWithRouteName:routeName type:type initialProps:initialProps stacks:valArray[0] tabBar:tabBar title:title navOptions:navOptions];
@@ -58,7 +63,6 @@ RCT_EXPORT_MODULE(ReactNavPage)
 - (void)setNavBarAlpha:(double)alpha {
     [ReactNavPageImpl.sharedInstance setNavBarAlphaWithAlpha:alpha];
 }
-
 
 
 

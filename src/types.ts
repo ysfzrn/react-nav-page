@@ -9,6 +9,7 @@ export type navOptions = {
   headerTransparent?: boolean;
   headerBackgroundColor?: string;
   hederNavBarAlpha?: Float;
+  sharedElements?: UnsafeObject;
 };
 
 export type pushTypes = {
